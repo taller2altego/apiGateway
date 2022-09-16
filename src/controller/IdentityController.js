@@ -1,13 +1,15 @@
-class UserController {
-    async checkCredential(req, res, next) {
-    }
-  
-    async SingIn(req, res, next) {
-    }
-  
-    async SingOut(req, res, next) {
-    }
+// const axios = require('axios');
 
-  }
+// class UserController {
+//     async checkCredential(req, res, next) {
+//     }
   
-  module.exports = new UserController();
+//     async SignIn(req, res, next) {
+//     }
+  
+//     async SignOut(req, res, next) {
+//     }
+
+//   }
+  
+//   module.exports = new UserController();
