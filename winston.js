@@ -22,8 +22,7 @@ const logger = createLogger({
     myFormat
   ),
   transports: [
-    new transports.Console({ level: 'info' }),
-    new transports.File({ filename: "/usr/src/app/combined.log", level: 'info' }),
+    new transports.Console({ level: 'info' })
   ]
 });
 

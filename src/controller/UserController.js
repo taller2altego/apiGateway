@@ -69,6 +69,7 @@ class UserController {
       })
       .catch(err => {
         logger.error(JSON.stringify(err, null, 2));
+        // TODO: lo arreglo yo ahora
         res.customResponse = { statusCode: err.status, message: 'err.response' };
         next();
       });
