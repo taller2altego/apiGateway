@@ -1,26 +1,34 @@
-module.exports = app => { 
-    const user = require('../controller/UserController');
-    const identity = require('../controller/IdentityController')
-    const router = require('express').Router();
+module.exports = app => {
+  const user = require('../controller/UserController');
+  const identity = require('../controller/IdentityController');
+  const { post } = require('../utils/axios');
+  const router = require('express').Router();
 
-    const handlerResponse = (req, res) => {
-      const { statusCode, ...otherFields } = res.customResponse;
-      res.status(statusCode).send(otherFields);
-    };
-    
-    // user-microservice 
-    app.use('/users', router);
-    router.post('/', user.signUp, handlerResponse);
-    router.patch('/:id', user.patchUserById, handlerResponse);
-    router.get('/:id', user.findUserById, handlerResponse);
-    router.get('/', user.findAllUsers, handlerResponse);
-    router.delete('/:id', user.removeUserById, handlerResponse);
-    router.post('/reset_password', user.changePasswordByUsername, handlerResponse);
-
-    // credential-microservice
-    // app.use('/login', router);
-    // router.post('/', identity.checkCredential, handlerResponse);
-    // router.post('/', identity.singIn, handlerResponse);
-    // app.use('/logout', router);
-    // router.post('/', identity.singOut, handlerResponse);
+  const handlerResponse = (req, res) => {
+    const { statusCode, ...otherFields } = res.customResponse;
+    res.status(statusCode).send(otherFields);
   };
+
+  const validateToken = (req, res, next) => {
+    return post("http://login_microservice:5000/token", {}, req.headers)
+      .then(() => {
+        next();
+      })
+      .catch(() => {
+        res.status(401).send({ message: 'Unauthorized' });
+      });
+  };
+
+  // user-microservice 
+  app.use('/', router);
+  router.post('/users', user.signUp, handlerResponse);
+  router.patch('/users/:id', validateToken, user.patchUserById, handlerResponse);
+  router.get('/users/:id', validateToken, user.findUserById, handlerResponse);
+  router.get('/users/', validateToken, user.findAllUsers, handlerResponse);
+  router.delete('/users/:id', validateToken, user.removeUserById, handlerResponse);
+  router.post('/users/reset_password', validateToken, user.changePasswordByUsername, handlerResponse);
+
+  // credential-microservice
+  router.post('/login', identity.signIn, handlerResponse);
+  router.post('/logout', validateToken, identity.signOut, handlerResponse);
+};
