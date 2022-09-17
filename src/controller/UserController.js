@@ -4,21 +4,10 @@ const { post } = require('../utils/axios');
 
 class UserController {
   async signUp(req, res, next) {
-    return post("http://user_microservice:5000/users", req.body)
-      .then(response => {
-        console.debug('aca no');
-        console.debug(response);
-        console.debug(response.status);
-        console.debug(response.data);
-        res.customResponse = { statusCode: 200, ...response.data };
-        next();
-      })
-      .catch(err => {
-        logger.error('falla aca');
-        logger.error(JSON.stringify(err, null, 2));
-        res.customResponse = { statusCode: err.status, message: 'err.response' };
-        next();
-      });
+    res.customResponse = post("http://user_microservice:5000/users", req.body)
+      .then(response => ({ statusCode: 200, ...response.data }))
+      .catch(err => handlerError(err));
+    next();
   }
 
   async findAllUsers(req, res, next) {
