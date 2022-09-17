@@ -15,7 +15,7 @@ module.exports = app => {
     router.get('/:id', user.findUserById, handlerResponse);
     router.get('/', user.findAllUsers, handlerResponse);
     router.delete('/:id', user.removeUserById, handlerResponse);
-    // router.post('/reset_password', user.changePasswordByUsername, handlerResponse);
+    router.post('/reset_password', user.changePasswordByUsername, handlerResponse);
 
     // credential-microservice
     // app.use('/login', router);

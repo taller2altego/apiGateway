@@ -22,34 +22,85 @@ class UserController {
   }
 
   async findAllUsers(req, res, next) {
-    axios.get("localhost:5000/users")
-      .then(resp => {
-        console.log(res.data);
+    // OK
+    // return post("http://user_microservice:5000/token", req)
+    // .then(response => {
+    //   if (response.statusCode == 403){
+    //     console.log(response);
+    //     res.customResponse = { statusCode: 403, message: response.message };
+    //     // next();
+    //   }
+    // });
+    return axios.get("http://user_microservice:5000/users")
+      .then(response => {
+        console.log(response.data);
+        res.customResponse = { statusCode: 200, ...response.data };
+        next();
+      })
+      .catch(err => {
+        logger.error(JSON.stringify(err, null, 2));
+        res.customResponse = { statusCode: err.status, message: 'err.response' };
+        next();
       });
-    next();
   }
 
   async findUserById(req, res, next) {
-    // const config = {id: req.params.id};
-    // axios.get("localhost:5000/users", config)
-    // .then(res => {
-    //   console.log(res.data);
-    // });
+    // OK
+    return axios.get("http://user_microservice:5000/users/" + req.params.id, req.body)
+      .then(response => {
+        console.log(response.data);
+        res.customResponse = { statusCode: 200, ...response.data };
+        next();
+      })
+      .catch(err => {
+        logger.error(JSON.stringify(err, null, 2));
+        // TODO: lo arreglo yo ahora
+        res.customResponse = { statusCode: err.status, message: 'err.response' };
+        next();
+      });
   }
 
   async patchUserById(req, res, next) {
-    // const config = {id: req.params.id, body: req.body};
-    // axios.get("localhost:5000/users/:id", config)
-    // .then(res => {
-    //   console.log(res.data);
-    // });
+    return axios.patch("http://user_microservice:5000/users/" + req.params.id, req.body)
+      .then(response => {
+        console.log(response.data);
+        res.customResponse = { statusCode: 200, ...response.data };
+        next();
+      })
+      .catch(err => {
+        logger.error(JSON.stringify(err, null, 2));
+        res.customResponse = { statusCode: err.status, message: 'err.response' };
+        next();
+      });
   }
 
   async removeUserById(req, res, next) {
+    return axios.delete("http://user_microservice:5000/users/" + req.params.id)
+      .then(response => {
+        console.log(response.data);
+        res.customResponse = { statusCode: 200, ...response.data };
+        next();
+      })
+      .catch(err => {
+        logger.error(JSON.stringify(err, null, 2));
+        res.customResponse = { statusCode: err.status, message: 'err.response' };
+        next();
+      });
   }
 
-  // async changePasswordByUsername(req, res, next) {
-  // }
+  async changePasswordByUsername(req, res, next) {
+    return axios.post("http://user_microservice:5000/reset_password", req.body)
+      .then(response => {
+        console.log(response.data);
+        res.customResponse = { statusCode: 200, ...response.data };
+        next();
+      })
+      .catch(err => {
+        logger.error(JSON.stringify(err, null, 2));
+        res.customResponse = { statusCode: err.status, message: 'err.response' };
+        next();
+      });
+  }
 }
 
 module.exports = new UserController();
