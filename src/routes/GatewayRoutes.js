@@ -10,7 +10,7 @@ module.exports = app => {
     
     // user-microservice 
     app.use('/users', router);
-    // router.post('/', user.signUp, handlerResponse);
+    router.post('/', user.signUp, handlerResponse);
     router.patch('/:id', user.patchUserById, handlerResponse);
     router.get('/:id', user.findUserById, handlerResponse);
     router.get('/', user.findAllUsers, handlerResponse);

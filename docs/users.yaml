@@ -1,0 +1,90 @@
+paths:
+  /users/:
+    post:
+      tags:
+        - users
+      summary: Creacion de usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/postBody"
+      responses:
+        200:
+          description: devuelve toda la información del user creado menos la password
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/user"
+        # TODO: agregar los otros tipos de error
+
+    get:
+      tags:
+        - users
+      summary: Obtiene todos los usuarios registrados de forma paginada
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Una lista de objetos con el detalle los usuarios
+          content:
+            "application/json":
+              schema:
+                type: array
+                items:
+                  $ref: "#/definitions/user"
+
+  /users/${userId}:
+    get:
+      tags:
+        - users
+      summary: Obtiene un usuario registrado
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: userId
+          description: id del user a obtener
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Un objeto con el detalle los usuarios
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/user"
+
+definitions:
+  postBody:
+    type: object
+    properties:
+      name:
+        type: string
+      lastname:
+        type: string
+      phoneNumber:
+        type: integer
+      email:
+        type: string
+        format: email
+      password:
+        type: string
+  user:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      lastname:
+        type: string
+      phoneNumber:
+        type: integer
+      email:
+        type: string
+        format: email
