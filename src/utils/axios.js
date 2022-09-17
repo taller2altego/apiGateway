@@ -9,4 +9,12 @@ const post = (url, body, headers) => axios.post(
   }
 });
 
-module.exports = { post };
+const get = (url, headers) => axios.get(url, { headers: { ...headers } });
+
+const patch = (url, body, headers) => axios.patch(url, body, { headers: { ...headers } });
+
+const remove = (url) => axios.delete(
+  url
+);
+
+module.exports = { post, get, patch, remove };
