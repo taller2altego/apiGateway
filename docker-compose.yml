@@ -6,3 +6,10 @@ services:
     ports:
       - 6000:6000
     restart: always
+    networks:
+      - fiuber-network
+
+networks:
+  fiuber-network:
+    driver: bridge
+    name: fiuber_network
