@@ -46,6 +46,7 @@ class UserController {
   }
 
   async associateDriverToUser(req, res, next) {
+    console.log(req.params);
     const response = await post(`http://user_microservice:5000/users/${req.params.id}/driver`, req.body)
       .then(response => ({ statusCode: 200, ...response.data }))
       .catch(err => handlerError(err));

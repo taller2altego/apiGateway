@@ -1,0 +1,71 @@
+paths:
+  /login/:
+    post:
+      tags:
+        - identity
+      summary: Crea un token a partir de un email y password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/login"
+      responses:
+        200:
+          description: conecta al user
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/identity"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+  /logout/:
+    post:
+      tags:
+        - identity
+      summary: Identificacion de Usuarios
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: desconecta al user
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+
+definitions:
+  login:
+    type: object
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+  identity:
+    type: object
+    properties:
+      token:
+        type: string
+  errors:
+    unexpected:
+      type: object
+      properties:
+        message:
+          type: string
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []

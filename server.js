@@ -8,7 +8,11 @@ const morgan = require('morgan');
 const logger = require('./winston');
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
@@ -28,7 +32,7 @@ const swaggerDefinition = {
     description: "API gateway",
     version: "0.1",
   },
-  servers: [{ url: "http://localhost:6000", description: "" }]
+  servers: [{ url: "http://localhost:5000", description: "" }]
 };
 
 const options = { swaggerDefinition, apis: ["./docs/**/*.yaml"] };
@@ -43,7 +47,7 @@ app.get("/", (req, res) => {
 
 require("./src/routes/GatewayRoutes")(app);
 
-app.listen(6000, () => {
+app.listen(5000, () => {
   console.log('is connected');
 });
 

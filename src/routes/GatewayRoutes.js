@@ -13,8 +13,12 @@ module.exports = app => {
     console.log('hasta aca llega');
     console.log(JSON.stringify(req.headers, undefined, 2));
     return post("http://login_microservice:5000/token", {}, { authorization: req.headers.authorization })
-      .then(() => next())
-      .catch(() => res.status(401).send({ message: 'Unauthorized' }));
+      .then(() => {
+        next()
+      })
+      .catch(() => {
+        res.status(401).send({ message: 'Unauthorized' })
+      });
   };
 
   // user-microservice 
