@@ -21,6 +21,16 @@ module.exports = app => {
       });
   };
 
+  const validateUser = (req, res, next) => {
+    return post("http://user_microservice:5000/users/verifyUserByEmail", req.body)
+      .then(() => {
+        next()
+      })
+      .catch(() => {
+        res.status(404).send({ message: 'User Not Found' })
+      });
+  };
+
   // user-microservice 
   app.use('/', router);
   router.post('/users', user.signUp, handlerResponse);
@@ -34,9 +44,9 @@ module.exports = app => {
   router.get('/users/:userId/driver/:driverId', validateToken, driver.findDriverById, handlerResponse);
   router.patch('/users/:userId/driver/:driverId', validateToken, driver.patchDriverById, handlerResponse);
   router.delete('/users/:userId/driver/:driverId', validateToken, driver.removeDriverById, handlerResponse);
-  // router.post('/users/reset_password', validateToken, user.changePasswordByUsername, handlerResponse);
 
   // credential-microservice
   router.post('/login', identity.signIn, handlerResponse);
+  router.post('/recoverPassword', validateUser, identity.sendEmail, handlerResponse);
   router.post('/logout', validateToken, identity.signOut, handlerResponse);
 };

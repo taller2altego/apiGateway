@@ -1,7 +1,7 @@
 const { post, get } = require('../utils/axios');
 const handlerError = require('../utils/handlerError');
 
-class UserController {
+class IdentityController {
   async signIn(req, res, next) {
     return Promise.all([
       get(`http://user_microservice:5000/users?email=${req.body.email}&password=${req.body.password}`),
@@ -20,6 +20,19 @@ class UserController {
       });
   }
 
+  async sendEmail(req, res, next) {
+    console.log(req.body)
+    return post("http://login_microservice:5000/login/send_token", req.body)
+      .then(response => {
+        res.customResponse = { statusCode: 200, ...response.data };
+        next();
+      })
+      .catch(err => {
+        res.customResponse = handlerError(err);
+        next();
+      });
+  }
+
   async signOut(req, res, next) {
     return post("http://login_microservice:5000/logout", req.headers)
       .then(response => {
@@ -33,4 +46,4 @@ class UserController {
   }
 }
 
-module.exports = new UserController();
+module.exports = new IdentityController();
