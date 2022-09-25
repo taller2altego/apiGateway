@@ -1,33 +1,24 @@
 const { post, get } = require('../utils/axios');
-const handlerError = require('../utils/handlerError');
+const handlerResponse = require('../utils/handlerResponse');
 
 class UserController {
-  async signIn(req, res, next) {
-    return Promise.all([
-      get(`http://user_microservice:5000/users?email=${req.body.email}&password=${req.body.password}`),
-      post("http://login_microservice:5000/login", req.body)
-    ])
-      .then(([usersResponse, loginResponse]) => {
-        const id = usersResponse.data.data[0].id;
-        const token = loginResponse.data.token;
-        res.customResponse = { statusCode: 200, ...{ id, token } };
-        next();
-      })
-      .catch(err => {
-        console.log(err);
-        res.customResponse = handlerError(err);
+  signIn(req, res, next) {
+    const id = req.customBody.id;
+    return post("http://login_microservice:5000/login", req.body)
+      .then(axiosResponse => handlerResponse(axiosResponse, { id }))
+      .catch(error => handlerResponse(error))
+      .then(response => {
+        res.customResponse = response;
         next();
       });
   }
 
-  async signOut(req, res, next) {
-    return post("http://login_microservice:5000/logout", req.headers)
+  signOut(req, res, next) {
+    return post("http://login_microservice:5000/logout", {}, { authorization: req.headers.authorization })
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => handlerResponse(error))
       .then(response => {
-        res.customResponse = { statusCode: 200, ...response.data };
-        next();
-      })
-      .catch(err => {
-        res.customResponse = handlerError(err);
+        res.customResponse = response;
         next();
       });
   }

@@ -1,3 +1,5 @@
+const checkUserExist = require('../validator/checkUserExist');
+
 module.exports = app => {
   const user = require('../controller/UserController');
   const driver = require('../controller/DriverController');
@@ -29,14 +31,14 @@ module.exports = app => {
   router.patch('/users/:id', validateToken, user.patchUserById, handlerResponse);
   router.delete('/users/:id', validateToken, user.removeUserById, handlerResponse);
 
+  // driver
   router.post('/users/:userId/driver', validateToken, driver.associateDriverToUser, handlerResponse);
   router.get('/users/:userId/driver', validateToken, driver.findAllDrivers, handlerResponse);
   router.get('/users/:userId/driver/:driverId', validateToken, driver.findDriverById, handlerResponse);
   router.patch('/users/:userId/driver/:driverId', validateToken, driver.patchDriverById, handlerResponse);
   router.delete('/users/:userId/driver/:driverId', validateToken, driver.removeDriverById, handlerResponse);
-  // router.post('/users/reset_password', validateToken, user.changePasswordByUsername, handlerResponse);
 
   // credential-microservice
-  router.post('/login', identity.signIn, handlerResponse);
+  router.post('/login', checkUserExist, identity.signIn, handlerResponse);
   router.post('/logout', validateToken, identity.signOut, handlerResponse);
 };

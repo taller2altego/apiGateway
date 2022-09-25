@@ -1,46 +1,56 @@
 const { post, get, patch, remove } = require('../utils/axios');
-const handlerError = require('../utils/handlerError');
+const handlerResponse = require('../utils/handlerResponse');
 
 
 class DriverController {
-  async associateDriverToUser(req, res, next) {
-    const response = await post(`http://user_microservice:5000/users/${req.params.userId}/driver`, req.body)
-      .then(response => ({ statusCode: 200, ...response.data }))
-      .catch(err => handlerError(err));
-    res.customResponse = response;
-    next();
+  associateDriverToUser(req, res, next) {
+    return post(`http://user_microservice:5000/users/${req.params.userId}/driver`, req.body)
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => handlerResponse(error))
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
   }
 
   async findAllDrivers(req, res, next) {
-    const response = await get(`http://user_microservice:5000/users/${req.params.userId}/driver`)
-      .then(response => ({ statusCode: 200, ...response.data }))
-      .catch(err => handlerError(err));
-    res.customResponse = response;
-    next();
+    return get(`http://user_microservice:5000/users/${req.params.userId}/driver`)
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => handlerResponse(error))
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
   }
 
-  async findDriverById(req, res, next) {
-    const response = await get(`http://user_microservice:5000/users/${req.params.userId}/driver/${req.params.driverId}`)
-      .then(response => ({ statusCode: 200, ...response.data }))
-      .catch(err => handlerError(err));
-    res.customResponse = response;
-    next();
+  findDriverById(req, res, next) {
+    return get(`http://user_microservice:5000/users/${req.params.userId}/driver/${req.params.driverId}`)
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => handlerResponse(error))
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
   }
 
-  async patchDriverById(req, res, next) {
-    const response = await patch(`http://user_microservice:5000/users/${req.params.userId}/driver/${req.params.driverId}`, req.body)
-      .then(response => ({ statusCode: 200, ...response.data }))
-      .catch(err => handlerError(err));
-    res.customResponse = response;
-    next();
+  patchDriverById(req, res, next) {
+    return patch(`http://user_microservice:5000/users/${req.params.userId}/driver/${req.params.driverId}`, req.body)
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => handlerResponse(error))
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
   }
 
-  async removeDriverById(req, res, next) {
-    const response = await remove(`http://user_microservice:5000/users/${req.params.userId}/driver/${req.params.driverId}`)
-      .then(response => ({ statusCode: 200, ...response.data }))
-      .catch(err => handlerError(err));
-    res.customResponse = response;
-    next();
+  removeDriverById(req, res, next) {
+    return remove(`http://user_microservice:5000/users/${req.params.userId}/driver/${req.params.driverId}`)
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => handlerResponse(error))
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
   }
 }
 
