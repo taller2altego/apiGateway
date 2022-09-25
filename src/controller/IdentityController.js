@@ -22,6 +22,17 @@ class UserController {
         next();
       });
   }
+
+  async sendEmail(req, res, next) {
+    console.log(req.body)
+    return post("http://login_microservice:5000/login/send_token", req.body)
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => handlerResponse(error))
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
+  }
 }
 
-module.exports = new UserController();
+module.exports = new IdentityController();
