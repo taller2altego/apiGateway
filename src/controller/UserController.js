@@ -2,6 +2,7 @@ const { default: axios } = require("axios");
 const logger = require("../../winston");
 const { post, get, patch, remove } = require('../utils/axios');
 const handlerResponse = require('../utils/handlerResponse');
+const jwt = require('jsonwebtoken');
 
 class UserController {
 
@@ -65,7 +66,24 @@ class UserController {
       });
   }
 
-
+  changePassword(req, res, next) {
+    const authorization = req.headers.authorization && req.headers.authorization.split(' ');
+    const token = authorization[0] === 'Bearer' ? authorization[1] : '';
+    const { payload } = jwt.decode(token, { complete: true });
+    const body = {
+      email: payload.email,
+      newPassword: req.body.newPassword
+    }
+    return post("http://user_microservice:5000/users/changePassword", body)
+    .then(() => {
+      res.customResponse = { statusCode: 204 };
+      next();
+    })
+    .catch((err) => {
+      console.log(err);
+      next();
+    });
+  }
 }
 
 module.exports = new UserController();
