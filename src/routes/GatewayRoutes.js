@@ -31,6 +31,6 @@ module.exports = app => {
 
   // credential-microservice
   router.post('/login', checkUserByEmailAndPassword, identity.signIn, handlerResponse);
-  router.post('/recoverPassword', checkUserByEmail, identity.sendEmail, handlerResponse);
+  router.post('/recover', checkUserByEmail, identity.sendEmail, handlerResponse);
   router.post('/logout', validateToken, identity.signOut, handlerResponse);
 };

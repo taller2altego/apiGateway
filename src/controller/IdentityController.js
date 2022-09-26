@@ -1,7 +1,7 @@
 const { post, get } = require('../utils/axios');
 const handlerResponse = require('../utils/handlerResponse');
 
-class UserController {
+class IdentityController {
   signIn(req, res, next) {
     const id = req.customBody.id;
     return post("http://login_microservice:5000/login", req.body)

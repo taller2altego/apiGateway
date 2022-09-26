@@ -64,6 +64,8 @@ class UserController {
         next();
       });
   }
+
+
 }
 
 module.exports = new UserController();
