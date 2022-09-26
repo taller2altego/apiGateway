@@ -17,6 +17,7 @@ module.exports = app => {
   // user-microservice 
   app.use('/', router);
   router.post('/users', user.signUp, handlerResponse);
+  router.post('/users/changePassword', validateToken, user.changePassword, handlerResponse)
   router.get('/users/', validateToken, user.findAllUsers, handlerResponse);
   router.get('/users/:id', validateToken, user.findUserById, handlerResponse);
   router.patch('/users/:id', validateToken, user.patchUserById, handlerResponse);
