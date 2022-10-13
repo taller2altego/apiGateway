@@ -8,7 +8,6 @@ module.exports = (req, res, next) => {
         res.status(404).send({ message: 'El usuario no fue identificado' });
         return;
       }
-      console.log(data[0].id);
       req.customBody = { id: data[0].id };
       next();
     })
