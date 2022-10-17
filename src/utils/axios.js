@@ -9,7 +9,7 @@ const post = (url, body, headers) => axios.post(
   }
 });
 
-const get = (url, headers) => axios.get(url, { headers: { ...headers } });
+const get = (url, params, headers) => axios.get(url, { headers: { ...headers }, params });
 
 const patch = (url, body, headers) => axios.patch(url, body, { headers: { ...headers } });
 

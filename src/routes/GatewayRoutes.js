@@ -5,6 +5,7 @@ const validateToken = require('../validator/validateToken');
 const user = require('../controller/UserController');
 const driver = require('../controller/DriverController');
 const identity = require('../controller/IdentityController');
+const TravelController = require('../controller/TravelController');
 
 module.exports = app => {
   const router = require('express').Router();
@@ -34,4 +35,8 @@ module.exports = app => {
   router.post('/login', checkUserByEmailAndPassword, identity.signIn, handlerResponse);
   router.post('/recover', checkUserByEmail, identity.sendEmail, handlerResponse);
   router.post('/logout', validateToken, identity.signOut, handlerResponse);
+
+  // travel
+  router.post('/travels', validateToken, TravelController.createTravel, handlerResponse);
+  router.get('/travels/:userId', validateToken, TravelController.findTravelsById, handlerResponse);
 };
