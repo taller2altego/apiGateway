@@ -37,6 +37,9 @@ module.exports = app => {
   router.post('/logout', validateToken, identity.signOut, handlerResponse);
 
   // travel
+  router.get('/travels', validateToken, TravelController.findTravels, handlerResponse);
   router.post('/travels', validateToken, TravelController.createTravel, handlerResponse);
+  router.patch('/travels/:travelId', validateToken, TravelController.patchTravel, handlerResponse);
+  router.get('/travels/:travelId/driver', validateToken, TravelController.checkDriverConfirmation, handlerResponse);
   router.get('/travels/:userId', validateToken, TravelController.findTravelsById, handlerResponse);
 };
