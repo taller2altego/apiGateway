@@ -18,7 +18,7 @@ class TravelController {
   }
 
   findTravelsById(req, res, next) {
-    return get(`http://travel_microservice:5000/travels/${req.params.userId}`, req.query)
+    return get(`http://travel_microservice:5000/travels/users/${req.params.userId}`, req.query)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
