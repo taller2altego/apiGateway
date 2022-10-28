@@ -7,6 +7,8 @@ const swaggerUi = require("swagger-ui-express");
 const morgan = require('morgan');
 const logger = require('./winston');
 
+
+
 const app = express();
 app.use(
   cors({
@@ -44,10 +46,9 @@ app.get("/ping", (req, res) => {
   res.send('pong').status(200);
 });
 
-
 require("./src/routes/GatewayRoutes")(app);
 
-app.listen(5000, () => {
+app.listen(process.env.PORT || 5000, () => {
   console.log('is connected');
 });
 

@@ -1,10 +1,12 @@
-const { post, get } = require('../utils/axios');
+const { endpoints: { loginMicroservice } } = require('config');
+
+const { post } = require('../utils/axios');
 const handlerResponse = require('../utils/handlerResponse');
 
 class IdentityController {
   signIn(req, res, next) {
     const id = req.customBody.id;
-    return post("http://login_microservice:5000/login", req.body)
+    return post(`${loginMicroservice}/login`, req.body)
       .then(axiosResponse => handlerResponse(axiosResponse, { id }))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -14,7 +16,7 @@ class IdentityController {
   }
 
   signOut(req, res, next) {
-    return post("http://login_microservice:5000/logout", {}, { authorization: req.headers.authorization })
+    return post(`${loginMicroservice}/logout`, {}, { authorization: req.headers.authorization })
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -25,7 +27,7 @@ class IdentityController {
 
   async sendEmail(req, res, next) {
     console.log(req.body)
-    return post("http://login_microservice:5000/login/send_token", req.body)
+    return post(`${loginMicroservice}/login/send_token`, req.body)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {

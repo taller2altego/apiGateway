@@ -1,13 +1,15 @@
-const { default: axios } = require("axios");
-const logger = require("../../winston");
+const { default: axios } = require('axios');
+const jwt = require('jsonwebtoken');
+const { endpoints: { userMicroservice } } = require('config');
+
+const logger = require(`../../winston`);
 const { post, get, patch, remove } = require('../utils/axios');
 const handlerResponse = require('../utils/handlerResponse');
-const jwt = require('jsonwebtoken');
 
 class UserController {
 
   signUp(req, res, next) {
-    return post("http://user_microservice:5000/users", req.body)
+    return post(`${userMicroservice}/users`, req.body)
       .then(axiosResponse => handlerResponse(axiosResponse, {}))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -17,7 +19,7 @@ class UserController {
   }
 
   findAllUsers(req, res, next) {
-    return get("http://user_microservice:5000/users")
+    return get(`${userMicroservice}/users`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -27,7 +29,7 @@ class UserController {
   }
 
   findUserById(req, res, next) {
-    return get(`http://user_microservice:5000/users/${req.params.id}`)
+    return get(`${userMicroservice}/users/${req.params.id}`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -37,7 +39,7 @@ class UserController {
   }
 
   patchUserById(req, res, next) {
-    return patch(`http://user_microservice:5000/users/${req.params.id}`, req.body)
+    return patch(`${userMicroservice}/users/${req.params.id}`, req.body)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -47,7 +49,7 @@ class UserController {
   }
 
   removeUserById(req, res, next) {
-    return remove(`http://user_microservice:5000/users/${req.params.id}`)
+    return remove(`${userMicroservice}/users/${req.params.id}`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -57,7 +59,7 @@ class UserController {
   }
 
   associateDriverToUser(req, res, next) {
-    return post(`http://user_microservice:5000/users/${req.params.id}/driver`, req.body)
+    return post(`${userMicroservice}/users/${req.params.id}/driver`, req.body)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -74,15 +76,15 @@ class UserController {
       email: payload.email,
       newPassword: req.body.newPassword
     }
-    return post("http://user_microservice:5000/users/changePassword", body)
-    .then(() => {
-      res.customResponse = { statusCode: 204 };
-      next();
-    })
-    .catch((err) => {
-      console.log(err);
-      next();
-    });
+    return post(`${userMicroservice}/users/changePassword`, body)
+      .then(() => {
+        res.customResponse = { statusCode: 204 };
+        next();
+      })
+      .catch((err) => {
+        console.log(err);
+        next();
+      });
   }
 }
 

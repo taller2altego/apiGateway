@@ -1,0 +1,8 @@
+{
+  "endpoints": {
+    "driverMicroservice": "http://user_microservice:5000",
+    "loginMicroservice": "http://login_microservice:5000",
+    "travelMicroservice": "http://travel_microservice:5000",
+    "userMicroservice": "http://user_microservice:5000"
+  }
+}

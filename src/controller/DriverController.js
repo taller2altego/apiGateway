@@ -1,10 +1,11 @@
+const { endpoints: { driverMicroservice } } = require('config');
+
 const { post, get, patch, remove } = require('../utils/axios');
 const handlerResponse = require('../utils/handlerResponse');
 
-
 class DriverController {
   associateDriverToUser(req, res, next) {
-    return post(`http://user_microservice:5000/users/${req.params.userId}/driver`, req.body)
+    return post(`${driverMicroservice}/users/${req.params.userId}/driver`, req.body)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -14,7 +15,7 @@ class DriverController {
   }
 
   async findAllDrivers(req, res, next) {
-    return get(`http://user_microservice:5000/users/${req.params.userId}/driver`)
+    return get(`${driverMicroservice}/users/${req.params.userId}/driver`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -24,7 +25,7 @@ class DriverController {
   }
 
   findDriverById(req, res, next) {
-    return get(`http://user_microservice:5000/users/${req.params.userId}/driver/${req.params.driverId}`)
+    return get(`${driverMicroservice}/users/${req.params.userId}/driver/${req.params.driverId}`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -34,7 +35,7 @@ class DriverController {
   }
 
   patchDriverById(req, res, next) {
-    return patch(`http://user_microservice:5000/users/${req.params.userId}/driver/${req.params.driverId}`, req.body)
+    return patch(`${driverMicroservice}/users/${req.params.userId}/driver/${req.params.driverId}`, req.body)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -44,7 +45,7 @@ class DriverController {
   }
 
   removeDriverById(req, res, next) {
-    return remove(`http://user_microservice:5000/users/${req.params.userId}/driver/${req.params.driverId}`)
+    return remove(`${driverMicroservice}/users/${req.params.userId}/driver/${req.params.driverId}`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
