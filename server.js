@@ -40,8 +40,8 @@ const swaggerSpec = swaggerJSDoc(options);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // simple route
-app.get("/", (req, res) => {
-  res.json({ message: "ApiGateway" });
+app.get("/ping", (req, res) => {
+  res.send('pong').status(200);
 });
 
 
