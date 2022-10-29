@@ -1,7 +1,7 @@
 const { post } = require("../utils/axios");
 
 module.exports = (req, res, next) => {
-  return post("http://user_microservice:5000/users/verifyUserByEmail", req.body)
+  return post(`${userMicroservice}users/verifyUserByEmail`, req.body)
     .then(() => {
       next()
     })
