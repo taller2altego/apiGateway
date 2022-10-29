@@ -1,8 +1,8 @@
 {
   "endpoints": {
-    "driverMicroservice": "http://user_microservice:5000",
-    "loginMicroservice": "http://login_microservice:5000",
-    "travelMicroservice": "http://travel_microservice:5000",
-    "userMicroservice": "http://user_microservice:5000"
+    "driverMicroservice": "https://user-microservice-fiuber.herokuapp.com/",
+    "identityMicroservice": "https://altego-fiuber-identity-service.herokuapp.com/",
+    "travelMicroservice": "https://altego-fiuber-travel.herokuapp.com/",
+    "userMicroservice": "https://user-microservice-fiuber.herokuapp.com/"
   }
 }
