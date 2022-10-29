@@ -1,4 +1,5 @@
 const handlerResponse = require("../utils/handlerResponse");
+const { endpoints: { userMicroservice } } = require('config');
 const { get } = require("../utils/axios");
 
 module.exports = (req, res, next) => {

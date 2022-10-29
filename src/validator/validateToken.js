@@ -1,3 +1,4 @@
+const { endpoints: { userMicroservice } } = require('config');
 const { post } = require("../utils/axios");
 
 module.exports = (req, res, next) => {
