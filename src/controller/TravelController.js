@@ -1,16 +1,13 @@
-const { default: axios } = require("axios");
-const jwt = require('jsonwebtoken');
-const { endpoints: { travelMicroservice } } = require('config');
+const { endpoints } = require('config');
 
-const logger = require("../../winston");
-const { post, get, patch, remove } = require('../utils/axios');
+const { post, get, patch } = require('../utils/axios');
 const handlerResponse = require('../utils/handlerResponse');
 
 class TravelController {
 
   findTravels(req, res, next) {
-    console.log(req.query);
-    return get(`${travelMicroservice}/travels`, req.query)
+    const url = process.env.travel_microservice || endpoints.travelMicroservice;
+    return get(`${url}/travels`, req.query)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -20,7 +17,8 @@ class TravelController {
   }
 
   findTravelsById(req, res, next) {
-    return get(`${travelMicroservice}/travels/users/${req.params.userId}`, req.query)
+    const url = process.env.travel_microservice || endpoints.travelMicroservice;
+    return get(`${url}/travels/users/${req.params.userId}`, req.query)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -30,7 +28,8 @@ class TravelController {
   }
 
   createTravel(req, res, next) {
-    return post(`${travelMicroservice}/travels`, req.body)
+    const url = process.env.travel_microservice || endpoints.travelMicroservice;
+    return post(`${url}/travels`, req.body)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -40,7 +39,8 @@ class TravelController {
   }
 
   patchTravel(req, res, next) {
-    return patch(`${travelMicroservice}/travels/${req.params.travelId}`, req.body)
+    const url = process.env.travel_microservice || endpoints.travelMicroservice;
+    return patch(`${url}/travels/${req.params.travelId}`, req.body)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -50,7 +50,8 @@ class TravelController {
   }
 
   checkDriverConfirmation(req, res, next) {
-    return get(`${travelMicroservice}/travels/${req.params.travelId}/driver`)
+    const url = process.env.travel_microservice || endpoints.travelMicroservice;
+    return get(`${url}/travels/${req.params.travelId}/driver`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {

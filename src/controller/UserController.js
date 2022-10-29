@@ -1,15 +1,14 @@
-const { default: axios } = require('axios');
 const jwt = require('jsonwebtoken');
-const { endpoints: { userMicroservice } } = require('config');
+const { endpoints } = require('config');
 
-const logger = require(`../../winston`);
 const { post, get, patch, remove } = require('../utils/axios');
 const handlerResponse = require('../utils/handlerResponse');
 
 class UserController {
 
   signUp(req, res, next) {
-    return post(`${userMicroservice}/users`, req.body)
+    const url = process.env.user_microservice || endpoints.userMicroservice;
+    return post(`${url}/users`, req.body)
       .then(axiosResponse => handlerResponse(axiosResponse, {}))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -19,7 +18,8 @@ class UserController {
   }
 
   findAllUsers(req, res, next) {
-    return get(`${userMicroservice}/users`)
+    const url = process.env.user_microservice || endpoints.userMicroservice;
+    return get(`${url}/users`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -29,7 +29,8 @@ class UserController {
   }
 
   findUserById(req, res, next) {
-    return get(`${userMicroservice}/users/${req.params.id}`)
+    const url = process.env.user_microservice || endpoints.userMicroservice;
+    return get(`${url}/users/${req.params.id}`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -39,7 +40,8 @@ class UserController {
   }
 
   patchUserById(req, res, next) {
-    return patch(`${userMicroservice}/users/${req.params.id}`, req.body)
+    const url = process.env.user_microservice || endpoints.userMicroservice;
+    return patch(`${url}/users/${req.params.id}`, req.body)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -49,7 +51,8 @@ class UserController {
   }
 
   removeUserById(req, res, next) {
-    return remove(`${userMicroservice}/users/${req.params.id}`)
+    const url = process.env.user_microservice || endpoints.userMicroservice;
+    return remove(`${url}/users/${req.params.id}`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -59,7 +62,8 @@ class UserController {
   }
 
   associateDriverToUser(req, res, next) {
-    return post(`${userMicroservice}/users/${req.params.id}/driver`, req.body)
+    const url = process.env.user_microservice || endpoints.userMicroservice;
+    return post(`${url}/users/${req.params.id}/driver`, req.body)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -72,11 +76,14 @@ class UserController {
     const authorization = req.headers.authorization && req.headers.authorization.split(' ');
     const token = authorization[0] === 'Bearer' ? authorization[1] : '';
     const { payload } = jwt.decode(token, { complete: true });
+
     const body = {
       email: payload.email,
       newPassword: req.body.newPassword
-    }
-    return post(`${userMicroservice}/users/changePassword`, body)
+    };
+
+    const url = process.env.user_microservice || endpoints.userMicroservice;
+    return post(`${url}/users/changePassword`, body)
       .then(() => {
         res.customResponse = { statusCode: 204 };
         next();

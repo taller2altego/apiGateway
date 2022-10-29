@@ -1,11 +1,18 @@
+const { endpoints } = require('config');
+const logger = require('../../winston');
 const { post } = require("../utils/axios");
+const handlerResponse = require('../utils/handlerResponse');
 
 module.exports = (req, res, next) => {
-  return post("http://login_microservice:5000/token", {}, { authorization: req.headers.authorization })
+  const url = process.env.identity_microservice || endpoints.identityService;
+
+  return post(`${url}/token`, {}, { authorization: req.headers.authorization })
     .then(() => {
       next()
     })
-    .catch(() => {
-      res.status(401).send({ message: 'Unauthorized' })
+    .catch(err => {
+      const { statusCode, ...other } = handlerResponse(err);
+      logger.error(JSON.stringify({ ...other, statusCode }));
+      res.status(statusCode).send({ message: other });
     });
 };

@@ -1,9 +1,9 @@
+const { post } = require("../utils/axios");
 const { endpoints: { userMicroservice } } = require('config');
 
-const { post } = require("../utils/axios");
-
 module.exports = (req, res, next) => {
-  return post(`${userMicroservice}/users/verifyUserByEmail`, req.body)
+  const url = process.env.user_microservice || userMicroservice;
+  return post(`${url}/users/verifyUserByEmail`, req.body)
     .then(() => {
       next()
     })
