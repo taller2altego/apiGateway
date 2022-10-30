@@ -49,6 +49,17 @@ class TravelController {
       });
   }
 
+  findTravelById(req, res, next) {
+    const url = process.env.travel_microservice || endpoints.travelMicroservice;
+    return get(`${url}/travels/${req.params.travelId}`, req.body)
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => handlerResponse(error))
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
+  }
+
   checkDriverConfirmation(req, res, next) {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
     return get(`${url}/travels/${req.params.travelId}/driver`)

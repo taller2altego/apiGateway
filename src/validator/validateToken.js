@@ -8,10 +8,11 @@ module.exports = (req, res, next) => {
 
   return post(`${url}/token`, {}, { authorization: req.headers.authorization })
     .then(() => {
+      console.log("PASO EL TOKEN");
       next()
     })
     .catch(err => {
-      console.log(err);
+      console.log("ABCSADASDAS");
       const { statusCode, ...other } = handlerResponse(err);
       logger.error(JSON.stringify({ ...other, statusCode }));
       res.status(statusCode).send({ message: other });

@@ -40,6 +40,7 @@ module.exports = app => {
   router.get('/travels', validateToken, TravelController.findTravels, handlerResponse);
   router.post('/travels', validateToken, TravelController.createTravel, handlerResponse);
   router.patch('/travels/:travelId', validateToken, TravelController.patchTravel, handlerResponse);
+  router.get('/travels/:travelId', validateToken, TravelController.findTravelById, handlerResponse);
   router.get('/travels/:travelId/driver', validateToken, TravelController.checkDriverConfirmation, handlerResponse);
   router.get('/travels/users/:userId', validateToken, TravelController.findTravelsById, handlerResponse);
 };
