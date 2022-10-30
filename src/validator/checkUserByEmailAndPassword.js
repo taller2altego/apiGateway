@@ -4,15 +4,15 @@ const handlerResponse = require("../utils/handlerResponse");
 const { get } = require("../utils/axios");
 const logger = require('../../winston');
 
-module.exports = (req, res, next) => {
+module.exports = async (req, res, next) => {
   const url = process.env.user_microservice || userMicroservice;
-  return get(`${url}/users/login?email=${req.body.email}&password=${req.body.password}`)
+  return await get(`${url}/users/login?email=${req.body.email}&password=${req.body.password}`)
     .then(({ data: { data } }) => {
-      if (!data.length) {
+      if (!data) {
         res.status(404).send({ message: 'El usuario no fue identificado' });
         return;
       }
-      req.customBody = { id: data[0].id };
+      req.customBody = { id: data.id, isAdmin: data.isAdmin, isSuperadmin: data.isSuperadmin };
       next();
     })
     .catch(err => {

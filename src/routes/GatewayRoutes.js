@@ -1,11 +1,12 @@
-const checkUserByEmail = require('../validator/checkUserByEmail');
-const checkUserByEmailAndPassword = require('../validator/checkUserByEmailAndPassword');
-const validateToken = require('../validator/validateToken');
-
 const user = require('../controller/UserController');
 const driver = require('../controller/DriverController');
 const identity = require('../controller/IdentityController');
 const TravelController = require('../controller/TravelController');
+
+// validators
+const checkUserByEmail = require('../validator/checkUserByEmail');
+const checkUserByEmailAndPassword = require('../validator/checkUserByEmailAndPassword');
+const validateToken = require('../validator/validateToken');
 
 module.exports = app => {
   const router = require('express').Router();
@@ -15,10 +16,15 @@ module.exports = app => {
     res.status(statusCode).send(otherFields);
   };
 
-  // user-microservice 
+  const validateTokenUserCreation = (req, res, next) => {
+    const adminCreation = req.query.adminCreation === 'true';
+    return adminCreation ? validateToken(req, res, next) : next();
+  }
+
+  // user-microservice
   app.use('/', router);
-  router.post('/users', user.signUp, handlerResponse);
   router.post('/users/changePassword', validateToken, user.changePassword, handlerResponse)
+  router.post('/users', validateTokenUserCreation, user.signUp, handlerResponse);
   router.get('/users/', validateToken, user.findAllUsers, handlerResponse);
   router.get('/users/:id', validateToken, user.findUserById, handlerResponse);
   router.patch('/users/:id', validateToken, user.patchUserById, handlerResponse);
