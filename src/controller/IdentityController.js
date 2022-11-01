@@ -6,10 +6,13 @@ const handlerResponse = require('../utils/handlerResponse');
 class IdentityController {
 
   signIn(req, res, next) {
-    const id = req.customBody.id;
     const url = process.env.identity_microservice || endpoints.identityMicroservice;
-    console.log(url);
-    return post(`${url}/login`, req.body)
+
+    const id = req.customBody.id;
+    const isAdmin = req.customBody.isAdmin;
+    const isSuperadmin = req.customBody.isSuperadmin;
+
+    return post(`${url}/login`, { ...req.body, isAdmin, id, isSuperadmin })
       .then(axiosResponse => handlerResponse(axiosResponse, { id }))
       .catch(error => handlerResponse(error))
       .then(response => {

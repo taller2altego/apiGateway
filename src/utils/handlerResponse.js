@@ -12,7 +12,6 @@ module.exports = (axiosResponse, dataToMerge = {}, fieldsToKeep = []) => {
 
       return { statusCode: axiosResponse.status, ...response };
     } catch (err) {
-      console.log(err);
       throw err;
     }
   } else {

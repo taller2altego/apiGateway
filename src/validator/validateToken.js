@@ -5,14 +5,15 @@ const handlerResponse = require('../utils/handlerResponse');
 
 module.exports = (req, res, next) => {
   const url = process.env.identity_microservice || endpoints.identityMicroservice;
-
   return post(`${url}/token`, {}, { authorization: req.headers.authorization })
-    .then(() => {
-      console.log("PASO EL TOKEN");
-      next()
+    .then(({ data }) => {
+      const { isAdmin, isSuperadmin, id } = data;
+      req.query.isSuperadmin = isSuperadmin;
+      req.query.isAdmin = isAdmin;
+      req.query.id = id;
+      next();
     })
     .catch(err => {
-      console.log("ABCSADASDAS");
       const { statusCode, ...other } = handlerResponse(err);
       logger.error(JSON.stringify({ ...other, statusCode }));
       res.status(statusCode).send({ message: other });
