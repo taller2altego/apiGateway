@@ -32,10 +32,10 @@ module.exports = app => {
 
   // driver
   router.post('/users/:userId/driver', validateToken, driver.associateDriverToUser, handlerResponse);
-  router.get('/users/:userId/driver', validateToken, driver.findAllDrivers, handlerResponse);
-  router.get('/users/:userId/driver/:driverId', validateToken, driver.findDriverById, handlerResponse);
-  router.patch('/users/:userId/driver/:driverId', validateToken, driver.patchDriverById, handlerResponse);
-  router.delete('/users/:userId/driver/:driverId', validateToken, driver.removeDriverById, handlerResponse);
+  router.get('/drivers', validateToken, driver.findAllDrivers, handlerResponse);
+  router.get('/drivers/:driverId', validateToken, driver.findDriverById, handlerResponse);
+  router.patch('/drivers/:driverId', validateToken, driver.patchDriverById, handlerResponse);
+  router.delete('/drivers/:driverId', validateToken, driver.removeDriverById, handlerResponse);
 
   // credential-microservice
   router.post('/login', checkUserByEmailAndPassword, identity.signIn, handlerResponse);
