@@ -55,4 +55,6 @@ module.exports = app => {
   router.get('/fees/:feeId', validateToken, TravelController.findFee, handlerResponse);
   router.post('/fees', validateToken, TravelController.createFee, handlerResponse);
   router.patch('/fees/:feeId', validateToken, TravelController.patchFee, handlerResponse);
+
+  router.get('/price/:userId', validateToken, TravelController.getPrice, handlerResponse);
 };
