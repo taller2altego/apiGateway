@@ -5,6 +5,9 @@ const handlerResponse = require('../utils/handlerResponse');
 
 module.exports = (req, res, next) => {
   const url = process.env.identity_microservice || endpoints.identityMicroservice;
+  if (req.headers.authorization === undefined) {
+    res.status(401).send({ message: 'access token is required' });
+  }
   return post(`${url}/token`, {}, { authorization: req.headers.authorization })
     .then(({ data }) => {
       const { isAdmin, isSuperadmin, id } = data;
