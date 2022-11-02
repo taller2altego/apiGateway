@@ -116,8 +116,8 @@ class TravelController {
         res.customResponse = response;
         next();
       });
-
   }
+
   createFee(req, res, next) {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
     return post(`${url}/fees`, req.body, {}, req.params)
@@ -144,6 +144,37 @@ class TravelController {
         res.customResponse = response;
         next();
       });
+  }
+
+  async getPrice(req, res, next) {
+
+    try {
+      const usersUrl = process.env.user_microservice || endpoints.userMicroservice;
+      const seniority = await get(`${usersUrl}/users/${req.params.userId}`, { ...req.query })
+        .then(axiosResponse => handlerResponse(axiosResponse))
+        .then(response => {
+          const { createdAt } = response;
+          const result = new Date().getYear() - new Date(createdAt).getYear();
+          return result;
+        });
+
+      logger.info(`seniority: ${seniority}`);
+
+      const url = process.env.travel_microservice || endpoints.travelMicroservice;
+      return get(`${url}/price`, { ...req.query, seniority })
+        .then(axiosResponse => handlerResponse(axiosResponse))
+        .catch(error => {
+          logger.error(JSON.stringify(error, undefined, 2));
+        })
+        .then(response => {
+          res.customResponse = response;
+          next();
+        });
+    } catch (error) {
+      logger.error(JSON.stringify(error, undefined, 2));
+      res.customResponse = response;
+      next();
+    }
   }
 }
 
