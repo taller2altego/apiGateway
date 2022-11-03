@@ -7,8 +7,6 @@ const swaggerUi = require("swagger-ui-express");
 const morgan = require('morgan');
 const logger = require('./winston');
 
-
-
 const app = express();
 app.use(
   cors({
@@ -18,7 +16,6 @@ app.use(
 
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
-
 
 const myStream = {
   write: text => {

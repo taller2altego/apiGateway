@@ -12,12 +12,7 @@ module.exports = (req, res, next) => {
 
   return post(`${url}/token`, {}, { authorization: req.headers.authorization })
     .then(({ data }) => {
-      const { isAdmin, isSuperadmin, id, isBlocked } = data;
-
-      if (isBlocked === 'true') {
-        res.status(401).send({ message: 'La cuenta ha sido bloqueada bloqueada' });
-        return;
-      }
+      const { isAdmin, isSuperadmin, id } = data;
       req.query.isSuperadmin = isSuperadmin;
       req.query.isAdmin = isAdmin;
       req.query.id = id;
@@ -26,6 +21,6 @@ module.exports = (req, res, next) => {
     .catch(err => {
       const { statusCode, ...other } = handlerResponse(err);
       logger.error(JSON.stringify({ ...other, statusCode }));
-      res.status(statusCode).send({ message: other });
+      res.status(statusCode).send({ ...other });
     });
 };
