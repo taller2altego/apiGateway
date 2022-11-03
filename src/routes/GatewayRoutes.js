@@ -49,4 +49,12 @@ module.exports = app => {
   router.get('/travels/:travelId', validateToken, TravelController.findTravelById, handlerResponse);
   router.get('/travels/:travelId/driver', validateToken, TravelController.checkDriverConfirmation, handlerResponse);
   router.get('/travels/users/:userId', validateToken, TravelController.findTravelsById, handlerResponse);
+
+  // fees (travels)
+  router.get('/fees', validateToken, TravelController.findFees, handlerResponse);
+  router.get('/fees/:feeId', validateToken, TravelController.findFee, handlerResponse);
+  router.post('/fees', validateToken, TravelController.createFee, handlerResponse);
+  router.patch('/fees/:feeId', validateToken, TravelController.patchFee, handlerResponse);
+
+  router.get('/price/:userId', validateToken, TravelController.getPrice, handlerResponse);
 };
