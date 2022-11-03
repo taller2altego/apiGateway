@@ -5,9 +5,19 @@ const handlerResponse = require('../utils/handlerResponse');
 
 module.exports = (req, res, next) => {
   const url = process.env.identity_microservice || endpoints.identityMicroservice;
+
+  if (req.headers.authorization === undefined) {
+    res.status(401).send({ message: 'Access token es requerido' });
+  }
+
   return post(`${url}/token`, {}, { authorization: req.headers.authorization })
     .then(({ data }) => {
-      const { isAdmin, isSuperadmin, id } = data;
+      const { isAdmin, isSuperadmin, id, isBlocked } = data;
+
+      if (isBlocked === 'true') {
+        res.status(401).send({ message: 'La cuenta ha sido bloqueada bloqueada' });
+        return;
+      }
       req.query.isSuperadmin = isSuperadmin;
       req.query.isAdmin = isAdmin;
       req.query.id = id;

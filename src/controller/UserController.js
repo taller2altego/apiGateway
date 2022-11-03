@@ -40,8 +40,14 @@ class UserController {
       });
   }
 
-  patchUserById(req, res, next) {
+  async patchUserById(req, res, next) {
     const url = process.env.user_microservice || endpoints.userMicroservice;
+
+    if (req.body.isBlocked === true) {
+      const identityUrl = process.env.identity_microservice || endpoints.identityMicroservice;
+      await patch(`${identityUrl}/token`, { isBlocked: 'true' }, {}, {});
+    }
+
     return patch(`${url}/users/${req.params.id}`, req.body, {}, { ...req.query })
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
