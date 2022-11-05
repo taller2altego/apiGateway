@@ -2,6 +2,7 @@ const user = require('../controller/UserController');
 const driver = require('../controller/DriverController');
 const identity = require('../controller/IdentityController');
 const TravelController = require('../controller/TravelController');
+const report = require('../controller/ReportController');
 
 // validators
 const checkUserByEmail = require('../validator/checkUserByEmail');
@@ -50,6 +51,12 @@ module.exports = app => {
   router.get('/travels/:travelId/driver', validateToken, TravelController.checkDriverConfirmation, handlerResponse);
   router.get('/travels/users/:userId', validateToken, TravelController.findTravelsById, handlerResponse);
 
+  // reports
+  // router.get('/reports', validateToken, report.getAllReports, handlerResponse);
+  // router.post('/reports', validateToken, report.createReport, handlerResponse);
+  router.get('/reports', report.getAllReports, handlerResponse);
+  router.post('/reports', report.createReport, handlerResponse);
+  
   // fees (travels)
   router.get('/fees', validateToken, TravelController.findFees, handlerResponse);
   router.get('/fees/:feeId', validateToken, TravelController.findFee, handlerResponse);
