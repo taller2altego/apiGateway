@@ -40,15 +40,27 @@ class UserController {
       });
   }
 
-  patchUserById(req, res, next) {
-    const url = process.env.user_microservice || endpoints.userMicroservice;
-    return patch(`${url}/users/${req.params.id}`, req.body, {}, { ...req.query })
-      .then(axiosResponse => handlerResponse(axiosResponse))
-      .catch(error => handlerResponse(error))
-      .then(response => {
-        res.customResponse = response;
-        next();
-      });
+  async patchUserById(req, res, next) {
+    try {
+      const url = process.env.user_microservice || endpoints.userMicroservice;
+
+      if (req.body.isBlocked === true) {
+        const identityUrl = process.env.identity_microservice || endpoints.identityMicroservice;
+        await post(`${identityUrl}/logout`, {}, { authorization: req.headers.authorization })
+      }
+
+      return patch(`${url}/users/${req.params.id}`, req.body, {}, { ...req.query })
+        .then(axiosResponse => handlerResponse(axiosResponse))
+        .catch(error => handlerResponse(error))
+        .then(response => {
+          res.customResponse = response;
+          next();
+        });
+    } catch (error) {
+      logger.error(JSON.stringify(error, undefined, 2));
+      res.customResponse = handlerResponse(error);
+      next();
+    }
   }
 
   removeUserById(req, res, next) {
