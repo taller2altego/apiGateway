@@ -43,7 +43,6 @@ class UserController {
   async patchUserById(req, res, next) {
     try {
       const url = process.env.user_microservice || endpoints.userMicroservice;
-
       if (req.body.isBlocked === true) {
         const identityUrl = process.env.identity_microservice || endpoints.identityMicroservice;
         await post(`${identityUrl}/logout`, {}, { authorization: req.headers.authorization })

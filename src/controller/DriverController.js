@@ -17,7 +17,7 @@ class DriverController {
 
   async findAllDrivers(req, res, next) {
     const url = process.env.user_microservice || endpoints.driverMicroservice;
-    return get(`${url}/users/${req.params.userId}/driver`)
+    return get(`${url}/drivers`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -28,7 +28,7 @@ class DriverController {
 
   findDriverById(req, res, next) {
     const url = process.env.user_microservice || endpoints.driverMicroservice;
-    return get(`${url}/users/${req.params.userId}/driver/${req.params.driverId}`)
+    return get(`${url}/drivers/${req.params.driverId}`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -39,7 +39,7 @@ class DriverController {
 
   patchDriverById(req, res, next) {
     const url = process.env.user_microservice || endpoints.driverMicroservice;
-    return patch(`${url}/users/${req.params.userId}/driver/${req.params.driverId}`, req.body)
+    return patch(`${url}/drivers/${req.params.driverId}`, req.body)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
@@ -50,7 +50,7 @@ class DriverController {
 
   removeDriverById(req, res, next) {
     const url = process.env.user_microservice || endpoints.driverMicroservice;
-    return remove(`${url}/users/${req.params.userId}/driver/${req.params.driverId}`)
+    return remove(`${url}/drivers/${req.params.driverId}`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
