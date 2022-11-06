@@ -60,6 +60,7 @@ class UserController {
       res.customResponse = handlerResponse(error);
       next();
     }
+    
   }
 
   removeUserById(req, res, next) {
