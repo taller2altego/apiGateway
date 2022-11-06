@@ -52,10 +52,8 @@ module.exports = app => {
   router.get('/travels/users/:userId', validateToken, TravelController.findTravelsById, handlerResponse);
 
   // reports
-  // router.get('/reports', validateToken, report.getAllReports, handlerResponse);
-  // router.post('/reports', validateToken, report.createReport, handlerResponse);
-  router.get('/reports', report.getAllReports, handlerResponse);
-  router.post('/reports', report.createReport, handlerResponse);
+  router.get('/reports', validateToken, report.getAllReports, handlerResponse);
+  router.post('/reports', validateToken, report.createReport, handlerResponse);
   
   // fees (travels)
   router.get('/fees', validateToken, TravelController.findFees, handlerResponse);
