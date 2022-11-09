@@ -23,9 +23,9 @@ module.exports = app => {
 
   // user-microservice
   app.use('/', router);
-  router.post('/users/changePassword', validateToken, user.changePassword, handlerResponse)
   router.post('/users', validateTokenUserCreation, user.signUp, handlerResponse);
   router.get('/users/', validateToken, user.findAllUsers, handlerResponse);
+  router.patch('/users', validateToken, user.patchUserByEmail, handlerResponse);
   router.get('/users/:id', validateToken, user.findUserById, handlerResponse);
   router.patch('/users/:id', validateToken, user.patchUserById, handlerResponse);
   router.delete('/users/:id', validateToken, user.removeUserById, handlerResponse);
@@ -39,8 +39,9 @@ module.exports = app => {
 
   // credential-microservice
   router.post('/login', checkUserByEmailAndPassword, identity.signIn, handlerResponse);
-  router.post('/recover', checkUserByEmail, identity.sendEmail, handlerResponse);
+  router.post('/recover', identity.sendEmail, handlerResponse);
   router.post('/logout', validateToken, identity.signOut, handlerResponse);
+  router.post('/auth', identity.validateToken, handlerResponse);
 
   // travel
   router.get('/travels', validateToken, TravelController.findTravels, handlerResponse);

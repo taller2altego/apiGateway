@@ -60,7 +60,17 @@ class UserController {
       res.customResponse = handlerResponse(error);
       next();
     }
-    
+  }
+
+  patchUserByEmail(req, res, next) {
+    const url = process.env.user_microservice || endpoints.userMicroservice;
+    return patch(`${url}/users`, req.body, {}, { ...req.query })
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => handlerResponse(error))
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
   }
 
   removeUserById(req, res, next) {
@@ -81,28 +91,6 @@ class UserController {
       .catch(error => handlerResponse(error))
       .then(response => {
         res.customResponse = response;
-        next();
-      });
-  }
-
-  changePassword(req, res, next) {
-    const authorization = req.headers.authorization && req.headers.authorization.split(' ');
-    const token = authorization[0] === 'Bearer' ? authorization[1] : '';
-    const { payload } = jwt.decode(token, { complete: true });
-
-    const body = {
-      email: payload.email,
-      newPassword: req.body.newPassword
-    };
-
-    const url = process.env.user_microservice || endpoints.userMicroservice;
-    return post(`${url}/users/changePassword`, body)
-      .then(() => {
-        res.customResponse = { statusCode: 204 };
-        next();
-      })
-      .catch((err) => {
-        logger.error(JSON.stringify(err, undefined, 2));
         next();
       });
   }
