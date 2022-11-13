@@ -3,6 +3,9 @@ const { endpoints } = require('config');
 const { post } = require('../utils/axios');
 const handlerResponse = require('../utils/handlerResponse');
 
+const Metrics = require('hot-shots');
+const statsD = new Metrics();
+
 class IdentityController {
 
   signIn(req, res, next) {
@@ -16,6 +19,7 @@ class IdentityController {
       .then(axiosResponse => handlerResponse(axiosResponse, { id }))
       .catch(error => handlerResponse(error))
       .then(response => {
+        statsD.increment('loginUsers.emailAndPassword');
         res.customResponse = response;
         next();
       });
@@ -38,6 +42,7 @@ class IdentityController {
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
+        statsD.increment('recoverPassword');
         res.customResponse = response;
         next();
       });

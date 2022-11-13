@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
     "docker-up": "docker-compose up --build -d",
-    "start": "nodemon -L --inspect=0.0.0.0 server.js"
+    "docker-start": "nodemon -L --inspect=0.0.0.0 server.js"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,7 @@
     "config": "^3.3.8",
     "cors": "^2.8.5",
     "express": "^4.18.1",
+    "hot-shots": "^9.3.0",
     "jsonwebtoken": "^8.5.1",
     "mocha": "^10.1.0",
     "morgan": "^1.10.0",
