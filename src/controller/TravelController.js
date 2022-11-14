@@ -158,8 +158,6 @@ class TravelController {
           return result;
         });
 
-      logger.info(`seniority: ${seniority}`);
-
       const url = process.env.travel_microservice || endpoints.travelMicroservice;
       return get(`${url}/price`, { ...req.query, seniority })
         .then(axiosResponse => handlerResponse(axiosResponse))
@@ -172,7 +170,8 @@ class TravelController {
         });
     } catch (error) {
       logger.error(JSON.stringify(error, undefined, 2));
-      res.customResponse = response;
+
+      res.customResponse = handlerResponse(error);
       next();
     }
   }
