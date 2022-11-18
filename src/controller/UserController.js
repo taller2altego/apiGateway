@@ -8,6 +8,21 @@ const logger = require('../../winston');
 const Metrics = require('hot-shots');
 const statsD = new Metrics();
 
+const _patchUserById = (req, res, next) => {
+  const url = process.env.user_microservice || endpoints.userMicroservice;
+
+  return patch(`${url}/users/${req.params.id}`, req.body, {}, { ...req.query })
+    .then(axiosResponse => handlerResponse(axiosResponse))
+    .catch(error => {
+      logger.error(JSON.stringify(error, undefined, 2));
+      return handlerResponse(error)
+    })
+    .then(response => {
+      res.customResponse = response;
+      next();
+    });
+}
+
 class UserController {
   signUp(req, res, next) {
     const url = process.env.user_microservice || endpoints.userMicroservice;
@@ -43,34 +58,19 @@ class UserController {
       });
   }
 
-  _patchUserById(req, res, next) {
-    const url = process.env.user_microservice || endpoints.userMicroservice;
-
-    return patch(`${url}/users/${req.params.id}`, req.body, {}, { ...req.query })
-      .then(axiosResponse => handlerResponse(axiosResponse))
-      .catch(error => handlerResponse(error))
-      .then(response => {
-        res.customResponse = response;
-        next();
-      });
-  }
-
   async patchUserById(req, res, next) {
     try {
       if (req.body.isBlocked === true) {
         const identityUrl = process.env.identity_microservice || endpoints.identityMicroservice;
         await post(`${identityUrl}/logout`, {}, { authorization: req.headers.authorization });
-        return this
-          ._patchUserById(req, res, next)
+        return _patchUserById(req, res, next)
           .then(res => {
             statsD.increment('blockedUsers');
             return res;
           });
       } else {
-        return this._patchUserById(req, res, next);
+        return _patchUserById(req, res, next);
       }
-
-
     } catch (error) {
       logger.error(JSON.stringify(error, undefined, 2));
       res.customResponse = handlerResponse(error);

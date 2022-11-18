@@ -1,0 +1,6 @@
+{
+  "constants": {
+    "OAuthMethod": "oauth",
+    "CommonMethod": "common"
+  }
+}
