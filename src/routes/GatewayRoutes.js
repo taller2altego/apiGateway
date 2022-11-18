@@ -8,6 +8,10 @@ const checkUserByEmail = require('../validator/checkUserByEmail');
 const checkUserByEmailAndPassword = require('../validator/checkUserByEmailAndPassword');
 const validateToken = require('../validator/validateToken');
 
+// configs
+const { constants: { OAuthMethod, CommonMethod } } = require('config');
+const decryptToken = require('../validator/decryptToken');
+
 module.exports = app => {
   const router = require('express').Router();
 
@@ -38,7 +42,8 @@ module.exports = app => {
   router.delete('/drivers/:driverId', validateToken, driver.removeDriverById, handlerResponse);
 
   // credential-microservice
-  router.post('/login', checkUserByEmailAndPassword, identity.signIn, handlerResponse);
+  router.post('/login/oauth', decryptToken, checkUserByEmailAndPassword(OAuthMethod), identity.signIn, handlerResponse);
+  router.post('/login', checkUserByEmailAndPassword(CommonMethod), identity.signIn, handlerResponse);
   router.post('/recover', checkUserByEmail, identity.sendEmail, handlerResponse);
   router.post('/logout', validateToken, identity.signOut, handlerResponse);
 

@@ -20,7 +20,7 @@ module.exports = (req, res, next) => {
     })
     .catch(err => {
       const { statusCode, ...other } = handlerResponse(err);
-      logger.error(JSON.stringify({ ...other, statusCode }));
+      logger.error(JSON.stringify({ ...other, statusCode }, undefined, 2));
       res.status(statusCode).send({ ...other });
     });
 };
