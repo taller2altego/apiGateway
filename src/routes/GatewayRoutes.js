@@ -2,6 +2,8 @@ const user = require('../controller/UserController');
 const driver = require('../controller/DriverController');
 const identity = require('../controller/IdentityController');
 const TravelController = require('../controller/TravelController');
+const Metrics = require('hot-shots');
+const statsD = new Metrics()
 
 // validators
 const checkUserByEmail = require('../validator/checkUserByEmail');
@@ -15,6 +17,16 @@ const decryptToken = require('../validator/decryptToken');
 module.exports = app => {
   const router = require('express').Router();
 
+  const testingMetrics = (req, res) => {
+      statsD.increment('loginUsers.emailAndPassword');
+      statsD.increment('recoverPassword');
+      statsD.increment('createdUsers.emailAndPassword');
+      statsD.increment('blockedUsers');
+      statsD.increment('loginUsers.oauth');
+      statsD.increment('createdUsers.oauth');
+    res.status(200).send({ message: 'Hola' });
+  }
+
   const handlerResponse = (req, res) => {
     const { statusCode, ...otherFields } = res.customResponse;
     res.status(statusCode).send(otherFields);
@@ -27,7 +39,7 @@ module.exports = app => {
 
   // user-microservice
   app.use('/', router);
-  router.post('/users/changePassword', validateToken, user.changePassword, handlerResponse);
+  router.post('/users/changePassword', validateToken, user.changePassword, handlerResponse)
   router.post('/users', validateTokenUserCreation, user.signUp, handlerResponse);
   router.get('/users/', validateToken, user.findAllUsers, handlerResponse);
   router.get('/users/:id', validateToken, user.findUserById, handlerResponse);
@@ -62,4 +74,7 @@ module.exports = app => {
   router.patch('/fees/:feeId', validateToken, TravelController.patchFee, handlerResponse);
 
   router.get('/price/:userId', validateToken, TravelController.getPrice, handlerResponse);
+
+  //metric test
+  router.get('/metric_test', testingMetrics)
 };
