@@ -1,8 +1,11 @@
 const { constants: { OAuthMethod }, endpoints: { userMicroservice } } = require('config');
+const Metrics = require('hot-shots');
+const statsD = new Metrics();
 
 const handlerResponse = require("../utils/handlerResponse");
 const { get, post } = require("../utils/axios");
 const logger = require('../../winston');
+
 
 const oauthCheck = async (req, res, next) => {
   const url = process.env.user_microservice || userMicroservice;
@@ -10,6 +13,7 @@ const oauthCheck = async (req, res, next) => {
 
   return get(`${url}/users/login/oauth?email=${email}`)
     .then(({ data: { data } }) => {
+      statsD.increment('loginUsers.oauth');
       req.body = req.customBody.oauthData;
       req.customBody = { id: data.id, isAdmin: data.isAdmin, isSuperadmin: data.isSuperadmin };
       next();
@@ -21,6 +25,7 @@ const oauthCheck = async (req, res, next) => {
       if (statusCode === 404) {
         return post(`${url}/users/oauth`, req.customBody.oauthData)
           .then(({ data }) => {
+            statsD.increment('createdUsers.oauth');
             req.body = { ...req.customBody.oauthData };
             req.customBody = { id: data.id, isAdmin: false, isSuperadmin: false };
             next();
