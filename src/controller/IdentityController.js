@@ -43,6 +43,7 @@ class IdentityController {
       .catch(error => handlerResponse(error))
       .then(response => {
         statsD.increment('recoverPassword');
+
         res.customResponse = response;
         next();
       });
