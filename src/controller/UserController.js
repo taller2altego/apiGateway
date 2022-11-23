@@ -25,15 +25,21 @@ const _patchUserById = (req, res, next) => {
 
 class UserController {
   signUp(req, res, next) {
-    const url = process.env.user_microservice || endpoints.userMicroservice;
-    return post(`${url}/users`, req.body, {}, { ...req.query })
-      .then(axiosResponse => handlerResponse(axiosResponse, {}))
-      .catch(error => handlerResponse(error))
-      .then(response => {
-        statsD.increment('createdUsers.emailAndPassword');
-        res.customResponse = response;
-        next();
-      });
+    const urlUsers = process.env.user_microservice || endpoints.userMicroservice;
+    const urlWallet = process.env.paymentMicroservice || endpoints.paymentMicroservice;
+    return post(`${urlWallet}/payments/wallet/${req.body.email}`)
+      .then(() => {
+        return post(`${urlUsers}/users`, req.body, {}, { ...req.query })
+          .then(axiosResponse => handlerResponse(axiosResponse, {})
+          )
+          .catch(error => handlerResponse(error))
+          .then(response => {
+            statsD.increment('createdUsers.emailAndPassword');
+            res.customResponse = response;
+            next();
+          });
+      })
+      .catch((error) => handlerResponse(error));
   }
 
   findAllUsers(req, res, next) {
