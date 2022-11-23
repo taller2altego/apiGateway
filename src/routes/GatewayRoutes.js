@@ -18,12 +18,12 @@ module.exports = app => {
   const router = require('express').Router();
 
   const testingMetrics = (req, res) => {
-      statsD.increment('loginUsers.emailAndPassword');
-      statsD.increment('recoverPassword');
-      statsD.increment('createdUsers.emailAndPassword');
-      statsD.increment('blockedUsers');
-      statsD.increment('loginUsers.oauth');
-      statsD.increment('createdUsers.oauth');
+    statsD.increment('loginUsers.emailAndPassword');
+    statsD.increment('recoverPassword');
+    statsD.increment('createdUsers.emailAndPassword');
+    statsD.increment('blockedUsers');
+    statsD.increment('loginUsers.oauth');
+    statsD.increment('createdUsers.oauth');
     res.status(200).send({ message: 'Hola' });
   }
 
@@ -66,6 +66,11 @@ module.exports = app => {
   router.get('/travels/:travelId', validateToken, TravelController.findTravelById, handlerResponse);
   router.get('/travels/:travelId/driver', validateToken, TravelController.checkDriverConfirmation, handlerResponse);
   router.get('/travels/users/:userId', validateToken, TravelController.findTravelsById, handlerResponse);
+
+  router.post('/travels/:travelId/accept', validateToken, TravelController.patchTravelByState('accept'), handlerResponse);
+  router.post('/travels/:travelId/reject', validateToken, TravelController.patchTravelByState('reject'), handlerResponse);
+  router.post('/travels/:travelId/start', validateToken, TravelController.patchTravelByState('start'), handlerResponse);
+  router.post('/travels/:travelId/finish', validateToken, TravelController.patchTravelByState('finish'), handlerResponse);
 
   // fees (travels)
   router.get('/fees', validateToken, TravelController.findFees, handlerResponse);
