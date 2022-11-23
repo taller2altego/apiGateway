@@ -35,16 +35,29 @@ class TravelController {
   }
 
   createTravel(req, res, next) {
-    const url = process.env.travel_microservice || endpoints.travelMicroservice;
-    return post(`${url}/travels`, req.body)
-      .then(axiosResponse => handlerResponse(axiosResponse))
-      .catch(error => {
-        logger.error(JSON.stringify(error, undefined, 2));
-        return handlerResponse(error);
-      })
-      .then(response => {
-        res.customResponse = response;
-        next();
+    const urlTravels = process.env.travel_microservice || endpoints.travelMicroservice;
+    const urlWallet = process.env.paymentMicroservice || endpoints.paymentMicroservice;
+    const email = req.body.email;
+    delete req.body.email;
+    const bodyDeposit = {
+      amountInEthers: req.body.price.toString(),
+    };
+
+    return post(`${urlWallet}/wallet/deposit/${email}`, bodyDeposit)
+      .then(() => {
+        return post(`${urlTravels}/travels`, req.body)
+          .then(axiosResponse => handlerResponse(axiosResponse))
+          .catch(error => {
+            return post(`${urlWallet}/wallet/payment/${email}`, bodyDeposit)
+              .then(() => {
+                logger.error(JSON.stringify(error, undefined, 2));
+                return handlerResponse(error);
+              });
+          })
+          .then(response => {
+            res.customResponse = response;
+            next();
+          });
       });
   }
 
