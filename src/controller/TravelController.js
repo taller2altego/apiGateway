@@ -62,6 +62,22 @@ class TravelController {
       });
   }
 
+  patchTravelByState(state) {
+    return (req, res, next) => {
+      const url = process.env.travel_microservice || endpoints.travelMicroservice;
+      return post(`${url}/travels/${req.params.travelId}/${state}`, req.body)
+        .then(axiosResponse => handlerResponse(axiosResponse))
+        .catch(error => {
+          logger.error(JSON.stringify(error, undefined, 2));
+          return handlerResponse(error);
+        })
+        .then(response => {
+          res.customResponse = response;
+          next();
+        });
+    }
+  }
+
   findTravelById(req, res, next) {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
     return get(`${url}/travels/${req.params.travelId}`, req.body)
@@ -147,7 +163,6 @@ class TravelController {
   }
 
   async getPrice(req, res, next) {
-
     try {
       const usersUrl = process.env.user_microservice || endpoints.userMicroservice;
       const seniority = await get(`${usersUrl}/users/${req.params.userId}`, { ...req.query })
