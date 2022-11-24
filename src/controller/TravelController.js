@@ -78,15 +78,16 @@ class TravelController {
     return (req, res, next) => {
       const url = process.env.travel_microservice || endpoints.travelMicroservice;
       const urlWallet = process.env.paymentMicroservice || endpoints.paymentMicroservice;
-      const email = req.body.email;
-      const price = req.body.price;
-      delete req.body.price;
-      delete req.body.email;
+      const body = req.body;
+      if (state == 'reject' || state == 'finish') {
+        delete req.body.price;
+        delete req.body.email;
+      }
 
       return post(`${url}/travels/${req.params.travelId}/${state}`, req.body)
         .then(async (axiosResponse) => {
           if (state == 'reject' || state == 'finish') {
-            await post(`${urlWallet}/payments/pay/${email}`, { amountInEthers: price })
+            await post(`${urlWallet}/payments/pay/${body.email}`, { amountInEthers: body.price })
               .then(() => {
                 handlerResponse(axiosResponse)
               })
