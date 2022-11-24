@@ -83,22 +83,21 @@ class TravelController {
       delete req.body.price;
       delete req.body.email;
 
-      return post(`${url}/travels/${req.params.travelId}/${state}`)
+      return post(`${url}/travels/${req.params.travelId}/${state}`, req.body)
         .then(async (axiosResponse) => {
           if (state == 'reject' || state == 'finish') {
             await post(`${urlWallet}/payments/pay/${email}`, { amountInEthers: price })
+              .then(() => {
+                handlerResponse(axiosResponse)
+              })
               .catch((error) => {
                 logger.error(JSON.stringify(error, undefined, 2));
-                console.log("ROMPE AC");
                 return handlerResponse(error);
               });
           }
-          console.log("ROMPE AAAAAAAAAAAAAAAAAA");
-          console.log(axiosResponse);
-          handlerResponse(axiosResponse);
+          return handlerResponse(axiosResponse)
         })
         .catch((error) => {
-          console.log("ROMPE AASDASDSADA");
           logger.error(JSON.stringify(error, undefined, 2));
           return handlerResponse(error);
         })
