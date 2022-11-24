@@ -42,13 +42,12 @@ class TravelController {
     const bodyDeposit = {
       amountInEthers: req.body.price.toString(),
     };
-
-    return post(`${urlWallet}/wallet/deposit/${email}`, bodyDeposit)
+    return post(`${urlWallet}/payments/deposit/${email}`, bodyDeposit)
       .then(() => {
         return post(`${urlTravels}/travels`, req.body)
           .then(axiosResponse => handlerResponse(axiosResponse))
           .catch(error => {
-            return post(`${urlWallet}/wallet/payment/${email}`, bodyDeposit)
+            return post(`${urlWallet}/payments/pay/${email}`, bodyDeposit)
               .then(() => {
                 logger.error(JSON.stringify(error, undefined, 2));
                 return handlerResponse(error);
@@ -78,13 +77,32 @@ class TravelController {
   patchTravelByState(state) {
     return (req, res, next) => {
       const url = process.env.travel_microservice || endpoints.travelMicroservice;
-      return patch(`${url}/travels/${req.params.travelId}/${state}`, req.body)
-        .then(axiosResponse => handlerResponse(axiosResponse))
-        .catch(error => {
+      const urlWallet = process.env.paymentMicroservice || endpoints.paymentMicroservice;
+      const email = req.body.email;
+      const price = req.body.price;
+      delete req.body.price;
+      delete req.body.email;
+
+      return post(`${url}/travels/${req.params.travelId}/${state}`)
+        .then(async (axiosResponse) => {
+          if (state == 'reject' || state == 'finish') {
+            await post(`${urlWallet}/payments/pay/${email}`, { amountInEthers: price })
+              .catch((error) => {
+                logger.error(JSON.stringify(error, undefined, 2));
+                console.log("ROMPE AC");
+                return handlerResponse(error);
+              });
+          }
+          console.log("ROMPE AAAAAAAAAAAAAAAAAA");
+          console.log(axiosResponse);
+          handlerResponse(axiosResponse);
+        })
+        .catch((error) => {
+          console.log("ROMPE AASDASDSADA");
           logger.error(JSON.stringify(error, undefined, 2));
           return handlerResponse(error);
         })
-        .then(response => {
+        .then((response) => {
           res.customResponse = response;
           next();
         });
@@ -93,7 +111,7 @@ class TravelController {
 
   findTravelById(req, res, next) {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
-    return get(`${url}/travels/${req.params.travelId}`, req.body)
+    return get(`${url} /travels/${req.params.travelId} `, req.body)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => {
         logger.error(JSON.stringify(error, undefined, 2));
@@ -107,7 +125,7 @@ class TravelController {
 
   checkDriverConfirmation(req, res, next) {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
-    return get(`${url}/travels/${req.params.travelId}/driver`)
+    return get(`${url} /travels/${req.params.travelId} /driver`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => {
         logger.error(JSON.stringify(error, undefined, 2));
