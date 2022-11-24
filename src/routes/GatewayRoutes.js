@@ -32,9 +32,14 @@ module.exports = app => {
     res.status(statusCode).send(otherFields);
   };
 
+  const isUserCreation = (req, res, next) => {
+    req.body.role = 'admin';
+    validateToken(req, res, next);
+  }
+
   const validateTokenUserCreation = (req, res, next) => {
     const adminCreation = req.query.adminCreation === 'true';
-    return adminCreation ? validateToken(req, res, next) : next();
+    return adminCreation ? isUserCreation(req, res, next) : next();
   }
 
   // user-microservice
