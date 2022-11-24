@@ -65,7 +65,7 @@ class TravelController {
   patchTravelByState(state) {
     return (req, res, next) => {
       const url = process.env.travel_microservice || endpoints.travelMicroservice;
-      return patch(`${url}/travels/${req.params.travelId}/${state}`, req.body)
+      return post(`${url}/travels/${req.params.travelId}/${state}`, req.body)
         .then(axiosResponse => handlerResponse(axiosResponse))
         .catch(error => {
           logger.error(JSON.stringify(error, undefined, 2));
