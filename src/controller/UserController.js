@@ -62,7 +62,7 @@ class UserController {
     try {
       if (req.body.isBlocked === true) {
         const identityUrl = process.env.identity_microservice || endpoints.identityMicroservice;
-        await post(`${identityUrl}/logout`, {}, { authorization: req.headers.authorization });
+        await post(`${identityUrl}/block`, { email: req.body.email });
         return _patchUserById(req, res, next)
           .then(res => {
             statsD.increment('blockedUsers');
