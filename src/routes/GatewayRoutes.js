@@ -42,6 +42,15 @@ module.exports = app => {
     return adminCreation ? isUserCreation(req, res, next) : next();
   }
 
+  const checkAdminLogin = (req, res, next) => {
+    if (req.query.isBackoffice === 'true' && req.customBody.isAdmin == false) {
+      res.status(401).send({ message: 'unauthorized' });
+      return;
+    } else {
+      next();
+    }
+  }
+
   // user-microservice
   app.use('/', router);
   router.post('/users/changePassword', validateToken, user.changePassword, handlerResponse)
@@ -60,7 +69,7 @@ module.exports = app => {
 
   // credential-microservice
   router.post('/login/oauth', decryptToken, checkUserByEmailAndPassword(OAuthMethod), identity.signIn, handlerResponse);
-  router.post('/login', checkUserByEmailAndPassword(CommonMethod), identity.signIn, handlerResponse);
+  router.post('/login', checkUserByEmailAndPassword(CommonMethod), checkAdminLogin, identity.signIn, handlerResponse);
   router.post('/recover', checkUserByEmail, identity.sendEmail, handlerResponse);
   router.post('/logout', validateToken, identity.signOut, handlerResponse);
 
