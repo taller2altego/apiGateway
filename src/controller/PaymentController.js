@@ -8,7 +8,7 @@ class PaymentController {
     const bodyDeposit = {
       amountInEthers: req.body.amount.toString(),
     };
-    return post(`${urlWallet}/payments/deposit/${req.body.email}`, bodyDeposit)
+    return post(`${urlWallet}/payments/deposit/${req.params.email}`, bodyDeposit)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
