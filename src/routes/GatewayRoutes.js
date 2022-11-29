@@ -13,6 +13,7 @@ const validateToken = require('../validator/validateToken');
 // configs
 const { constants: { OAuthMethod, CommonMethod } } = require('config');
 const decryptToken = require('../validator/decryptToken');
+const PaymentController = require('../controller/PaymentController');
 
 module.exports = app => {
   const router = require('express').Router();
@@ -82,4 +83,7 @@ module.exports = app => {
 
   //metric test
   router.get('/metric_test', testingMetrics)
+
+  // payments
+  router.post('/payments/deposit/:email', validateToken, PaymentController.deposit, handlerResponse);
 };
