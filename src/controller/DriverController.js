@@ -37,13 +37,20 @@ class DriverController {
   }
 
   patchDriverById(req, res, next) {
-    const url = process.env.user_microservice || endpoints.driverMicroservice;
-    return patch(`${url}/drivers/${req.params.driverId}`, req.body)
-      .then(axiosResponse => {
+    const urlDrivers = process.env.user_microservice || endpoints.driverMicroservice;
+    const urlUsers = process.env.user_microservice || endpoints.driverMicroservice;
+    const urlWallet = process.env.paymentMicroservice || endpoints.paymentMicroservice;
+
+    return patch(`${urlDrivers}/drivers/${req.params.driverId}`, req.body)
+      .then(async (axiosResponse) => {
         if (req.body.withdrawFunds) {
-          return post(`${urlWallet}/payments/pay/${email}`, req.body.balance)
+          const user = await get(`${urlUsers}/users/${req.body.userId}`);
+          return post(`${urlWallet}/payments/pay/${user.email}`, req.body.balance)
+            .then(() => {
+              return handlerResponse(axiosResponse);
+            })
+            .catch((error) => handlerResponse(error))
         }
-        return handlerResponse(axiosResponse);
       })
       .catch(error => handlerResponse(error))
       .then(response => {
