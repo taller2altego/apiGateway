@@ -57,6 +57,7 @@ module.exports = app => {
   router.post('/users', validateTokenUserCreation, user.signUp, handlerResponse);
   router.get('/users/', validateToken, user.findAllUsers, handlerResponse);
   router.get('/users/:id', validateToken, user.findUserById, handlerResponse);
+  router.patch('/users/:id/location', validateToken, user.patchDefaultLocationByUserId, handlerResponse);
   router.patch('/users/:id', validateToken, user.patchUserById, handlerResponse);
   router.delete('/users/:id', validateToken, user.removeUserById, handlerResponse);
 

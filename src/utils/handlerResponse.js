@@ -1,5 +1,7 @@
 module.exports = (axiosResponse, dataToMerge = {}, fieldsToKeep = []) => {
-  if (axiosResponse.response) {
+  if (axiosResponse.status === 204) {
+    return { statusCode: 204 };
+  } else if (axiosResponse.response) {
     return { statusCode: axiosResponse.response.status, ...axiosResponse.response.data };
   } else if (axiosResponse.code === 'ENOTFOUND') {
     return { statusCode: 503, message: 'Service unavailable' };

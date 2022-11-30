@@ -78,6 +78,21 @@ class UserController {
     }
   }
 
+  patchDefaultLocationByUserId(req, res, next) {
+    const url = process.env.user_microservice || endpoints.userMicroservice;
+
+    return patch(`${url}/users/${req.params.id}/location`, req.body)
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => {
+        logger.error(JSON.stringify(error, undefined, 2));
+        return handlerResponse(error)
+      })
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
+  }
+
   removeUserById(req, res, next) {
     const url = process.env.user_microservice || endpoints.userMicroservice;
     return remove(`${url}/users/${req.params.id}`, { ...req.query })
