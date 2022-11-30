@@ -52,6 +52,7 @@ module.exports = app => {
   router.get('/drivers', validateToken, driver.findAllDrivers, handlerResponse);
   router.get('/drivers/:driverId', validateToken, driver.findDriverById, handlerResponse);
   router.patch('/drivers/:driverId', validateToken, driver.patchDriverById, handlerResponse);
+  router.patch('/drivers/:driverId/payment', validateToken, driver.patchDriverOnPayment, handlerResponse);
   router.delete('/drivers/:driverId', validateToken, driver.removeDriverById, handlerResponse);
 
   // credential-microservice
@@ -86,4 +87,5 @@ module.exports = app => {
 
   // payments
   router.post('/payments/deposit/:email', validateToken, PaymentController.deposit, handlerResponse);
+  router.post('/payments/pay/:email', validateToken, PaymentController.pay, handlerResponse);
 };

@@ -38,21 +38,50 @@ class DriverController {
 
   patchDriverById(req, res, next) {
     const urlDrivers = process.env.user_microservice || endpoints.driverMicroservice;
+    return patch(`${urlDrivers}/drivers/${req.params.driverId}`, req.body)
+      .then(async (axiosResponse) => handlerResponse(axiosResponse))
+      .catch(error => handlerResponse(error))
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
+  }
+
+  patchDriverOnPayment(req, res, next) {
+    const urlDrivers = process.env.user_microservice || endpoints.driverMicroservice;
     const urlUsers = process.env.user_microservice || endpoints.driverMicroservice;
     const urlWallet = process.env.paymentMicroservice || endpoints.paymentMicroservice;
-
-    return patch(`${urlDrivers}/drivers/${req.params.driverId}`, req.body)
+    const body = {
+      balance: req.body.balance,
+      withdrawFunds: req.body.withdrawFunds
+    };
+    
+    return patch(`${urlDrivers}/drivers/${req.params.driverId}`, body)
       .then(async (axiosResponse) => {
         if (req.body.withdrawFunds) {
           const user = await get(`${urlUsers}/users/${req.body.userId}`);
-          return post(`${urlWallet}/payments/pay/${user.email}`, req.body.balance)
+          console.log(req.body.balance);
+          console.log(req.body.balance);
+          console.log(req.body.balance);
+          console.log(req.body.balance);
+          return post(`${urlWallet}/payments/pay/${user.data.email}`, {
+            amountInEthers: req.body.balance.toString()
+          })
             .then(() => {
               return handlerResponse(axiosResponse);
             })
-            .catch((error) => handlerResponse(error))
+            .catch((error) => {
+              console.log("ACADSDSDAD");
+              console.log(error);
+              return handlerResponse(error);
+            })
         }
       })
-      .catch(error => handlerResponse(error))
+      .catch(error => {
+        console.log("ACADSDSDAD");
+        console.log(error);
+        return handlerResponse(error);
+      })
       .then(response => {
         res.customResponse = response;
         next();

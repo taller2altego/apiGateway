@@ -8,7 +8,21 @@ class PaymentController {
     const bodyDeposit = {
       amountInEthers: req.body.amount.toString(),
     };
-    return post(`${urlWallet}/payments/deposit/${req.params.email}`, bodyDeposit)
+    return post(`${url}/payments/deposit/${req.params.email}`, bodyDeposit)
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => handlerResponse(error))
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
+  }
+
+  pay(req, res, next) {
+    const url = process.env.paymentMicroservice || endpoints.paymentMicroservice;
+    const bodyDeposit = {
+      amountInEthers: req.body.amount.toString(),
+    };
+    return post(`${url}/payments/pay/${req.params.email}`, bodyDeposit)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
