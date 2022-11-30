@@ -63,8 +63,11 @@ module.exports = app => {
 
   // driver
   router.post('/users/:userId/driver', validateToken, driver.associateDriverToUser, handlerResponse);
+  
   router.get('/drivers', validateToken, driver.findAllDrivers, handlerResponse);
   router.get('/drivers/:driverId', validateToken, driver.findDriverById, handlerResponse);
+  router.get('/drivers/:driverId/reports', validateToken, driver.findAllReportsByDriverId, handlerResponse);
+
   router.patch('/drivers/:driverId', validateToken, driver.patchDriverById, handlerResponse);
   router.delete('/drivers/:driverId', validateToken, driver.removeDriverById, handlerResponse);
 

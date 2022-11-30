@@ -37,6 +37,17 @@ class DriverController {
       });
   }
 
+  findAllReportsByDriverId(req, res, next) {
+    const url = process.env.user_microservice || endpoints.driverMicroservice;
+    return get(`${url}/drivers/${req.params.driverId}/reports`)
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => handlerResponse(error))
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
+  }
+
   patchDriverById(req, res, next) {
     const url = process.env.user_microservice || endpoints.driverMicroservice;
     return patch(`${url}/drivers/${req.params.driverId}`, req.body)
