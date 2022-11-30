@@ -5,7 +5,6 @@ const handlerResponse = require('../utils/handlerResponse');
 const logger = require('../../winston');
 
 class TravelController {
-
   findTravels(req, res, next) {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
     return get(`${url}/travels`, req.query)
@@ -75,7 +74,7 @@ class TravelController {
           res.customResponse = response;
           next();
         });
-    }
+    };
   }
 
   findTravelById(req, res, next) {
@@ -187,7 +186,7 @@ class TravelController {
       logger.error(JSON.stringify(error, undefined, 2));
 
       res.customResponse = handlerResponse(error);
-      next();
+      return next();
     }
   }
 }

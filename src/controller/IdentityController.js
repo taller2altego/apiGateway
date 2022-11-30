@@ -1,21 +1,22 @@
 const { endpoints } = require('config');
 
+const Metrics = require('hot-shots');
 const { post } = require('../utils/axios');
 const handlerResponse = require('../utils/handlerResponse');
 
-const Metrics = require('hot-shots');
 const statsD = new Metrics();
 
 class IdentityController {
-
   signIn(req, res, next) {
     const url = process.env.identity_microservice || endpoints.identityMicroservice;
 
-    const id = req.customBody.id;
-    const isAdmin = req.customBody.isAdmin;
-    const isSuperadmin = req.customBody.isSuperadmin;
+    const { id } = req.customBody;
+    const { isAdmin } = req.customBody;
+    const { isSuperadmin } = req.customBody;
 
-    return post(`${url}/login`, { ...req.body, isAdmin, id, isSuperadmin })
+    return post(`${url}/login`, {
+      ...req.body, isAdmin, id, isSuperadmin
+    })
       .then(axiosResponse => handlerResponse(axiosResponse, { id }))
       .catch(error => handlerResponse(error))
       .then(response => {

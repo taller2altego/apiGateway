@@ -1,15 +1,22 @@
 const { constants: { OAuthMethod }, endpoints: { userMicroservice } } = require('config');
 const Metrics = require('hot-shots');
+
 const statsD = new Metrics();
 
-const handlerResponse = require("../utils/handlerResponse");
-const { get, post } = require("../utils/axios");
+const handlerResponse = require('../utils/handlerResponse');
+const { get, post } = require('../utils/axios');
 const logger = require('../../winston');
-
 
 const oauthCheck = async (req, res, next) => {
   const url = process.env.user_microservice || userMicroservice;
-  const email = req.customBody.oauthData.email;
+  const { email } = req.customBody.oauthData;
+
+  const handlerOauthCatch = error => {
+    const { statusCode, ...otherFields } = handlerResponse(error);
+    const log = { ...otherFields, statusCode };
+    logger.error(JSON.stringify(log));
+    res.status(statusCode).send(otherFields);
+  };
 
   return get(`${url}/users/login/oauth?email=${email}`)
     .then(({ data: { data } }) => {
@@ -23,23 +30,10 @@ const oauthCheck = async (req, res, next) => {
       const log = { ...otherFields, statusCode };
 
       if (statusCode === 404) {
-        return post(`${url}/users/oauth`, req.customBody.oauthData)
-          .then(({ data }) => {
-            statsD.increment('createdUsers.oauth');
-            req.body = { ...req.customBody.oauthData };
-            req.customBody = { id: data.id, isAdmin: false, isSuperadmin: false };
-            next();
-          })
-          .catch(error => {
-            const { statusCode, ...otherFields } = handlerResponse(error);
-            const log = { ...otherFields, statusCode };
-            logger.error(JSON.stringify(log));
-            res.status(statusCode).send(otherFields);
-          });
-      } else {
-        logger.error(JSON.stringify(log));
-        res.status(statusCode).send(otherFields);
+        return post(`${url}/users/oauth`, req.customBody.oauthData).then().catch(handlerOauthCatch);
       }
+      logger.error(JSON.stringify(log));
+      return res.status(statusCode).send(otherFields);
     });
 };
 
@@ -62,6 +56,6 @@ const commonCheck = (req, res, next) => {
     });
 };
 
-module.exports = methodAuthentication => {
-  return methodAuthentication === OAuthMethod ? oauthCheck : commonCheck;
-}
+module.exports = methodAuthentication => (
+  methodAuthentication === OAuthMethod ? oauthCheck : commonCheck
+);

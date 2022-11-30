@@ -1,6 +1,8 @@
 const { endpoints } = require('config');
 
-const { post, get, patch, remove } = require('../utils/axios');
+const {
+  post, get, patch, remove
+} = require('../utils/axios');
 const handlerResponse = require('../utils/handlerResponse');
 
 class DriverController {
