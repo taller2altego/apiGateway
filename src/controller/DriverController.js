@@ -60,10 +60,6 @@ class DriverController {
       .then(async (axiosResponse) => {
         if (req.body.withdrawFunds) {
           const user = await get(`${urlUsers}/users/${req.body.userId}`);
-          console.log(req.body.balance);
-          console.log(req.body.balance);
-          console.log(req.body.balance);
-          console.log(req.body.balance);
           return post(`${urlWallet}/payments/pay/${user.data.email}`, {
             amountInEthers: req.body.balance.toString()
           })
@@ -71,15 +67,11 @@ class DriverController {
               return handlerResponse(axiosResponse);
             })
             .catch((error) => {
-              console.log("ACADSDSDAD");
-              console.log(error);
               return handlerResponse(error);
             })
         }
       })
       .catch(error => {
-        console.log("ACADSDSDAD");
-        console.log(error);
         return handlerResponse(error);
       })
       .then(response => {

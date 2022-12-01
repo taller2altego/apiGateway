@@ -37,18 +37,39 @@ class TravelController {
   createTravel(req, res, next) {
     const urlTravels = process.env.travel_microservice || endpoints.travelMicroservice;
     const urlWallet = process.env.paymentMicroservice || endpoints.paymentMicroservice;
+    const urlUsers = process.env.user_microservice || endpoints.userMicroservice;
+
     const email = req.body.email;
+    const payWithWallet = req.body.payWithWallet;
     delete req.body.email;
+    delete req.body.payWithWallet;
     const bodyDeposit = {
       amountInEthers: req.body.price.toString(),
     };
-    return post(`${urlWallet}/payments/deposit/${email}`, bodyDeposit)
+
+    const payment = payWithWallet ? function pay() {
+      return patch(`${urlUsers}/users/${req.body.userId}`, { amount: req.body.price, isTransaction: true, withdrawFunds: true });
+    } : function pay() {
+      return post(`${urlWallet}/payments/deposit/${email}`, bodyDeposit);
+    };
+
+    const refund = payWithWallet ? function refund() {
+      return patch(`${urlUsers}/users/${req.body.userId}`, { amount: req.body.price, isTransaction: true, withdrawFunds: false });
+    } : function refund() {
+      return post(`${urlWallet}/payments/pay/${email}`, bodyDeposit);
+    };
+
+    return payment()
       .then(() => {
         return post(`${urlTravels}/travels`, req.body)
           .then(axiosResponse => handlerResponse(axiosResponse))
           .catch(error => {
-            return post(`${urlWallet}/payments/pay/${email}`, bodyDeposit)
+            return refund()
               .then(() => {
+                logger.error(JSON.stringify(error, undefined, 2));
+                return handlerResponse(error);
+              })
+              .catch(error => {
                 logger.error(JSON.stringify(error, undefined, 2));
                 return handlerResponse(error);
               });
@@ -57,6 +78,11 @@ class TravelController {
             res.customResponse = response;
             next();
           });
+      })
+      .catch(error => {
+        logger.error(JSON.stringify(error, undefined, 2));
+        res.customResponse = handlerResponse(error);
+        next();
       });
   }
 
