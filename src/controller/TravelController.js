@@ -177,6 +177,7 @@ class TravelController {
         .then(axiosResponse => handlerResponse(axiosResponse))
         .catch(error => {
           logger.error(JSON.stringify(error, undefined, 2));
+          return handlerResponse(error);
         })
         .then(response => {
           res.customResponse = response;
@@ -184,7 +185,6 @@ class TravelController {
         });
     } catch (error) {
       logger.error(JSON.stringify(error, undefined, 2));
-
       res.customResponse = handlerResponse(error);
       return next();
     }
