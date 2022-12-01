@@ -23,11 +23,53 @@ paths:
             "application/json":
               schema:
                 $ref: "#/definitions/errors/unexpected"
-  /logout/:
+  /login/oauth:
+    post:
+      tags:
+        - identity
+      summary: Crea un token a partir de login federado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/login"
+      responses:
+        200:
+          description: conecta al user
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/identity"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+  /token/:
     post:
       tags:
         - identity
       summary: Identificacion de Usuarios
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Esta autorizado
+        401:
+          description: No esta autorizado
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+  /logout/:
+    post:
+      tags:
+        - identity
+      summary: Deslogueo de Usuarios
       security:
         - bearerAuth: []
       responses:

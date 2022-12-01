@@ -1,132 +1,9 @@
 paths:
-  /users/changePassword:
-      post:
-        tags:
-          - users
-        summary: Cambio de password
-        security:
-        - bearerAuth: []
-        requestBody: 
-          required: true
-          content:
-            application/json:
-              schema:
-                $ref: "#/definitions/changePass"
-        responses:
-          204:
-            description: se envio el email para el cambio de password
-          404:
-            description: el usuario a ser consultado no existe
-            content:
-              "application/json":
-                schema:
-                  $ref: "#/definitions/errors/userNotFound"
-          500:
-            description: error no identificado
-            content:
-              "application/json":
-                schema:
-                  $ref: "#/definitions/errors/unexpected"
-  /users/:
+  /users/{userId}/driver:
     post:
       tags:
-        - users
-      summary: Creacion de usuario
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/definitions/postBody"
-      responses:
-        200:
-          description: devuelve toda la información del user creado menos la password
-          content:
-            "application/json":
-              schema:
-                $ref: "#/definitions/user"
-        404:
-          description: el usuario a ser consultado no existe
-          content:
-            "application/json":
-              schema:
-                $ref: "#/definitions/errors/userNotFound"
-        500:
-          description: error no identificado
-          content:
-            "application/json":
-              schema:
-                $ref: "#/definitions/errors/unexpected"
-    get:
-      tags:
-        - users
-      summary: Obtiene todos los usuarios registrados de forma paginada
-      security:
-        - bearerAuth: []
-      produces:
-        - application/json
-      responses:
-        200:
-          description: Una lista de objetos con el detalle los usuarios
-          content:
-            "application/json":
-              schema:
-                type: array
-                items:
-                  $ref: "#/definitions/user"
-        404:
-          description: el usuario a ser consultado no existe
-          content:
-            "application/json":
-              schema:
-                $ref: "#/definitions/errors/userNotFound"
-        500:
-          description: error no identificado
-          content:
-            "application/json":
-              schema:
-                $ref: "#/definitions/errors/unexpected"
-  /users/{userId}:
-    get:
-      tags:
-        - users
-      summary: Obtiene un usuario registrado
-      security:
-        - bearerAuth: []
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - in: path
-          name: userId
-          description: id del user a obtener
-          required: true
-          schema:
-            type: integer
-      responses:
-        200:
-          description: Un objeto con el detalle los usuarios
-          content:
-            "application/json":
-              schema:
-                $ref: "#/definitions/user"
-        404:
-          description: el usuario a ser consultado no existe
-          content:
-            "application/json":
-              schema:
-                $ref: "#/definitions/errors/userNotFound"
-        500:
-          description: error no identificado
-          content:
-            "application/json":
-              schema:
-                $ref: "#/definitions/errors/unexpected" 
-    patch:
-      tags:
-        - users
-      summary: Actualiza un usuario
+        - driver
+      summary: Asociación de un conductor a un usuario
       security:
         - bearerAuth: []
       parameters:
@@ -142,16 +19,97 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/definitions/postBody"
+              $ref: "#/definitions/driverPostBody"
       responses:
         200:
-          description: Edición exitosa
+          description: devuelve toda la información del conductor asociado a un usuario
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/driver"
+        404:
+          description: el conductor a ser consultado no existe
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/userNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+    /drivers/{userId}:
+    get:
+      tags:
+        - driver
+      summary: Consulta de todos los conductores asociados a un usuario
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          minimum: 1
+          description: Es el ID asociado al usuario
+      responses:
+        200:
+          description: devuelve toda la información del conductor asociado a un usuario
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/driver"
+        404:
+          description: el driver a ser consultado no existe
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/userNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+
+    patch:
+      tags:
+        - driver
+      summary: Actualiza un conductor
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          minimum: 1
+          description: Es el ID asociado al usuario
+        - in: path
+          name: driverId
+          schema:
+            type: integer
+          required: true
+          minimum: 1
+          description: Es el ID asociado al conductor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/driverPostBody"
+      responses:
+        200:
+          description: edición exitosa
           content:
             "application/json":
               schema:
                 type: object
         404:
-          description: el usuario a ser consultado no existe
+          description: el conductor a ser consultado no existe
           content:
             "application/json":
               schema:
@@ -164,8 +122,8 @@ paths:
                 $ref: "#/definitions/errors/unexpected"
     delete:
       tags:
-        - users
-      summary: Elimina un usuario
+        - driver
+      summary: Elimina un conductor
       security:
         - bearerAuth: []
       parameters:
@@ -176,11 +134,18 @@ paths:
           required: true
           minimum: 1
           description: Es el ID asociado al usuario
+        - in: path
+          name: driverId
+          schema:
+            type: integer
+          required: true
+          minimum: 1
+          description: Es el ID asociado al conductor
       responses:
         204:
           description: eliminación exitosa
         404:
-          description: el usuario a ser consultado no existe
+          description: el conductor a ser consultado no existe
           content:
             "application/json":
               schema:
@@ -191,49 +156,7 @@ paths:
             "application/json":
               schema:
                 $ref: "#/definitions/errors/unexpected"
-  /users/{userId}/location:
-    patch:
-      tags:
-        - users
-      summary: Setea location default
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: userId
-          schema:
-            type: integer
-          required: true
-          minimum: 1
-          description: Es el ID asociado al usuario
-      requestBody:
-        required: true
-        content:
-          "application/json":
-            schema:
-              type: object
-              properties:
-                defaultAddress:
-                  type: integer
-      responses:
-        200:
-          description: Edición exitosa de locacion
-          content:
-            "application/json":
-              schema:
-                type: object
-        404:
-          description: el usuario a ser consultado no existe
-          content:
-            "application/json":
-              schema:
-                $ref: "#/definitions/errors/userNotFound"
-        500:
-          description: error no identificado
-          content:
-            "application/json":
-              schema:
-                $ref: "#/definitions/errors/unexpected"
+
 definitions:
   postBody:
     type: object
