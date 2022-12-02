@@ -53,6 +53,15 @@ module.exports = app => {
 
   // user-microservice
   app.use('/', router);
+
+  router.get('/status', (req, res) => {
+    res.status(304).send({ message: 'x' });
+  });
+
+  router.get('/status/2', (req, res) => {
+    res.status(304).send();
+  });
+
   router.post('/users/changePassword', validateToken, user.changePassword, handlerResponse);
   router.post('/users', validateTokenUserCreation, user.signUp, handlerResponse);
   router.get('/users/', validateToken, user.findAllUsers, handlerResponse);
