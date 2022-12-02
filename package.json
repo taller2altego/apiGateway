@@ -39,7 +39,8 @@
     "sinon": "^14.0.1",
     "swagger-jsdoc": "^6.2.5",
     "swagger-ui-express": "^4.5.0",
-    "winston": "^3.8.2"
+    "winston": "^3.8.2",
+    "node-rdkafka": "^2.14.0"
   },
   "devDependencies": {
     "eslint": "^8.28.0",

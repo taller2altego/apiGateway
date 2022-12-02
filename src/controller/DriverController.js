@@ -18,7 +18,7 @@ class DriverController {
   }
 
   async findAllDrivers(req, res, next) {
-    const url = process.env.user_microservice || endpoints.driverMicroservice;
+    const url = process.env.driver_microservice || endpoints.driverMicroservice;
     return get(`${url}/drivers`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
@@ -29,7 +29,7 @@ class DriverController {
   }
 
   findDriverById(req, res, next) {
-    const url = process.env.user_microservice || endpoints.driverMicroservice;
+    const url = process.env.driver_microservice || endpoints.driverMicroservice;
     return get(`${url}/drivers/${req.params.driverId}`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
@@ -40,7 +40,7 @@ class DriverController {
   }
 
   findAllReportsByDriverId(req, res, next) {
-    const url = process.env.user_microservice || endpoints.driverMicroservice;
+    const url = process.env.driver_microservice || endpoints.driverMicroservice;
     return get(`${url}/drivers/${req.params.driverId}/reports`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
@@ -51,7 +51,7 @@ class DriverController {
   }
 
   patchDriverById(req, res, next) {
-    const url = process.env.user_microservice || endpoints.driverMicroservice;
+    const url = process.env.driver_microservice || endpoints.driverMicroservice;
     return patch(`${url}/drivers/${req.params.driverId}`, req.body)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
@@ -62,7 +62,7 @@ class DriverController {
   }
 
   removeDriverById(req, res, next) {
-    const url = process.env.user_microservice || endpoints.driverMicroservice;
+    const url = process.env.driver_microservice || endpoints.driverMicroservice;
     return remove(`${url}/drivers/${req.params.driverId}`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
