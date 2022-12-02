@@ -48,10 +48,11 @@ class DriverController {
   }
 
   patchDriverOnPayment(req, res, next) {
-    const urlDrivers = process.env.user_microservice || endpoints.driverMicroservice;
-    const urlUsers = process.env.user_microservice || endpoints.driverMicroservice;
+    const urlDrivers = process.env.driver_microservice || endpoints.driverMicroservice;
+    const urlUsers = process.env.user_microservice || endpoints.userMicroservice;
     const urlWallet = process.env.paymentMicroservice || endpoints.paymentMicroservice;
     const body = {
+      isTransaction: req.body.isTransaction,
       balance: req.body.balance,
       withdrawFunds: req.body.withdrawFunds
     };

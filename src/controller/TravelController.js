@@ -39,22 +39,20 @@ class TravelController {
     const urlWallet = process.env.paymentMicroservice || endpoints.paymentMicroservice;
     const urlUsers = process.env.user_microservice || endpoints.userMicroservice;
 
-    const email = req.body.email;
-    const payWithWallet = req.body.payWithWallet;
+    const email = req.body.email.toString();
+    const payWithWallet = req.body.paidWithCredits;
     delete req.body.email;
-    delete req.body.payWithWallet;
     const bodyDeposit = {
       amountInEthers: req.body.price.toString(),
     };
-
     const payment = payWithWallet ? function pay() {
-      return patch(`${urlUsers}/users/${req.body.userId}`, { amount: req.body.price, isTransaction: true, withdrawFunds: true });
+      return patch(`${urlUsers}/users/${req.body.userId}`, { balance: req.body.price, isTransaction: true, withdrawFunds: true });
     } : function pay() {
       return post(`${urlWallet}/payments/deposit/${email}`, bodyDeposit);
     };
 
     const refund = payWithWallet ? function refund() {
-      return patch(`${urlUsers}/users/${req.body.userId}`, { amount: req.body.price, isTransaction: true, withdrawFunds: false });
+      return patch(`${urlUsers}/users/${req.body.userId}`, { balance: req.body.price, isTransaction: true, withdrawFunds: false });
     } : function refund() {
       return post(`${urlWallet}/payments/pay/${email}`, bodyDeposit);
     };
@@ -104,14 +102,21 @@ class TravelController {
     return (req, res, next) => {
       const url = process.env.travel_microservice || endpoints.travelMicroservice;
       const urlWallet = process.env.paymentMicroservice || endpoints.paymentMicroservice;
+      const urlUsers = process.env.user_microservice || endpoints.userMicroservice;
+      const urlDrivers = process.env.driver_microservice || endpoints.driverMicroservice;
+
+      const pay = req.body.paidWithCredits ? function pay() {
+        const patchURL = req.body.payToDriver ? `${urlDrivers}/drivers/${req.body.driverId}` : `${urlUsers}/users/${req.body.userId}`;
+        return patch(patchURL, { balance: req.body.price, isTransaction: true, withdrawFunds: false });
+      } : function pay() {
+        return post(`${urlWallet}/payments/pay/${req.body.email}`, { amountInEthers: req.body.price.toString() });
+      };
 
       return post(`${url}/travels/${req.params.travelId}/${state}`, req.body)
-        .then(async (axiosResponse) => {
+        .then((axiosResponse) => {
           if (state == 'reject' || state == 'finish') {
-            await post(`${urlWallet}/payments/pay/${req.body.email}`, { amountInEthers: req.body.price })
-              .then(() => {
-                handlerResponse(axiosResponse)
-              })
+            return pay()
+              .then(() => handlerResponse(axiosResponse))
               .catch((error) => {
                 logger.error(JSON.stringify(error, undefined, 2));
                 return handlerResponse(error);
@@ -132,9 +137,10 @@ class TravelController {
 
   findTravelById(req, res, next) {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
-    return get(`${url} /travels/${req.params.travelId} `, req.body)
+    return get(`${url}/travels/${req.params.travelId}`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => {
+        console.log(error);
         logger.error(JSON.stringify(error, undefined, 2));
         return handlerResponse(error);
       })
@@ -146,7 +152,7 @@ class TravelController {
 
   checkDriverConfirmation(req, res, next) {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
-    return get(`${url} /travels/${req.params.travelId} /driver`)
+    return get(`${url}/travels/${req.params.travelId}/driver`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => {
         logger.error(JSON.stringify(error, undefined, 2));
