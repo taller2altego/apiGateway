@@ -27,15 +27,18 @@ module.exports = eventToLog => {
   });
 
   producer.on('disconnected', () => {
-    logger.info('Se desconectó el cliente');
+    // logger.info('Se desconectó el cliente');
+    console.log('se desconectó el cliente')
   });
 
   producer.on('event.error', err => {
-    logger.error(err);
+    // logger.(err);
+    console.log(err);
   });
 
   producer.on('event.log', log => {
-    logger.log(log);
+    // logger.log(log);
+    console.log(log)
   });
 
   producer.connect();
