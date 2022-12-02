@@ -1,5 +1,5 @@
 const Kafka = require('node-rdkafka');
-const logger = require('../../winston');
+// const logger = require('../../winston');
 
 const kafkaConf = {
   'group.id': 'cloudkarafka-example',
@@ -22,7 +22,9 @@ const producer = new Kafka.Producer(kafkaConf);
 module.exports = eventToLog => {
   producer.on('ready', () => {
     /* eslint-disable */
-    const message = new Buffer.from(eventToLog);
+    console.log('Se loguea: ');
+    console.log(eventToLog);
+    const message = new Buffer.from(JSON.stringify({ 'metricName': eventToLog }));
     producer.produce(topic, -1, message);
   });
 

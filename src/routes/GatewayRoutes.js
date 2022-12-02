@@ -1,4 +1,4 @@
-const Metrics = require('hot-shots');
+// const Metrics = require('hot-shots');
 const { constants: { OAuthMethod, CommonMethod } } = require('config');
 const router = require('express').Router();
 
@@ -7,8 +7,6 @@ const driver = require('../controller/DriverController');
 const identity = require('../controller/IdentityController');
 const TravelController = require('../controller/TravelController');
 
-const statsD = new Metrics();
-
 // validators
 const checkUserByEmail = require('../validator/checkUserByEmail');
 const checkUserByEmailAndPassword = require('../validator/checkUserByEmailAndPassword');
@@ -16,15 +14,17 @@ const validateToken = require('../validator/validateToken');
 
 // configs
 const decryptToken = require('../validator/decryptToken');
+const metricProducer = require('../utils/metricProducer');
 
 module.exports = app => {
   const testingMetrics = (req, res) => {
-    statsD.increment('loginUsers.emailAndPassword');
-    statsD.increment('recoverPassword');
-    statsD.increment('createdUsers.emailAndPassword');
-    statsD.increment('blockedUsers');
-    statsD.increment('loginUsers.oauth');
-    statsD.increment('createdUsers.oauth');
+    // statsD.increment('loginUsers.emailAndPassword');
+    // statsD.increment('recoverPassword');
+    // statsD.increment('createdUsers.emailAndPassword');
+    // statsD.increment('blockedUsers');
+    // statsD.increment('loginUsers.oauth');
+    // statsD.increment('createdUsers.oauth');
+    metricProducer({ metricName: 'blockedUsers' });
     res.status(200).send({ message: 'Hola' });
   };
 
@@ -53,14 +53,6 @@ module.exports = app => {
 
   // user-microservice
   app.use('/', router);
-
-  router.get('/status', (req, res) => {
-    res.status(304).send({ message: 'x' });
-  });
-
-  router.get('/status/2', (req, res) => {
-    res.status(304).send();
-  });
 
   router.post('/users/changePassword', validateToken, user.changePassword, handlerResponse);
   router.post('/users', validateTokenUserCreation, user.signUp, handlerResponse);
