@@ -25,7 +25,7 @@ module.exports = eventToLog => {
     console.log('Se loguea: ');
     console.log(eventToLog);
     const message = new Buffer.from(JSON.stringify({ 'metricName': eventToLog }));
-    producer.produce(topic, -1, message);
+    producer.produce(topic, -1, message, Math.floor(Math.random() * 1000000));
   });
 
   producer.on('disconnected', () => {
