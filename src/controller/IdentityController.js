@@ -3,6 +3,7 @@ const { endpoints } = require('config');
 const Metrics = require('hot-shots');
 const { post } = require('../utils/axios');
 const handlerResponse = require('../utils/handlerResponse');
+const metricProducer = require('../utils/metricProducer');
 
 const statsD = new Metrics();
 
@@ -20,7 +21,7 @@ class IdentityController {
       .then(axiosResponse => handlerResponse(axiosResponse, { id }))
       .catch(error => handlerResponse(error))
       .then(response => {
-        statsD.increment('loginUsers.emailAndPassword');
+        metricProducer({ 'metricName': 'loginUsers.emailAndPassword' });
         res.customResponse = response;
         next();
       });
