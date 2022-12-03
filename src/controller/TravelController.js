@@ -192,7 +192,7 @@ class TravelController {
 
   test(req, res, next) {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
-    console.log(1);
+    console.log(req.query);
     return get(`${url}/travels/test`, { ...req.query })
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => {
