@@ -98,5 +98,6 @@ module.exports = app => {
   router.get('/price/:userId', validateToken, TravelController.getPrice, handlerResponse);
 
   // metric test
+  router.get('/travels/test', TravelController.test, handlerResponse);
   router.get('/metric_test', testingMetrics);
 };

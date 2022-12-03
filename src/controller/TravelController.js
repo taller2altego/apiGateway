@@ -189,6 +189,20 @@ class TravelController {
       return next();
     }
   }
+
+  test(req, res, next) {
+    const url = process.env.travel_microservice || endpoints.travelMicroservice;
+    return get(`${url}/travels/test`, { ...req.query })
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => {
+        logger.error(JSON.stringify(error, undefined, 2));
+        return handlerResponse(error);
+      })
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
+  }
 }
 
 module.exports = new TravelController();
