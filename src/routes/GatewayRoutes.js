@@ -53,6 +53,8 @@ module.exports = app => {
   // user-microservice
   app.use('/', router);
 
+  router.get('/travels/test', TravelController.test, handlerResponse);
+
   router.post('/users/changePassword', validateToken, user.changePassword, handlerResponse);
   router.post('/users', validateTokenUserCreation, user.signUp, handlerResponse);
   router.get('/users/', validateToken, user.findAllUsers, handlerResponse);
@@ -98,6 +100,5 @@ module.exports = app => {
   router.get('/price/:userId', validateToken, TravelController.getPrice, handlerResponse);
 
   // metric test
-  router.get('/travels/test', TravelController.test, handlerResponse);
   router.get('/metric_test', testingMetrics);
 };
