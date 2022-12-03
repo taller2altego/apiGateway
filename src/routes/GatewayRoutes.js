@@ -18,13 +18,12 @@ const metricProducer = require('../utils/metricProducer');
 
 module.exports = app => {
   const testingMetrics = (req, res) => {
-    // statsD.increment('loginUsers.emailAndPassword');
-    // statsD.increment('recoverPassword');
-    // statsD.increment('createdUsers.emailAndPassword');
-    // statsD.increment('blockedUsers');
-    // statsD.increment('loginUsers.oauth');
-    // statsD.increment('createdUsers.oauth');
+    metricProducer(JSON.stringify({ metricName: 'loginUsers.emailAndPassword' }));
+    metricProducer(JSON.stringify({ metricName: 'recoverPassword' }));
+    metricProducer(JSON.stringify({ metricName: 'createdUsers.emailAndPassword' }));
     metricProducer(JSON.stringify({ metricName: 'blockedUsers' }));
+    metricProducer(JSON.stringify({ metricName: 'loginUsers.oauth' }));
+    metricProducer(JSON.stringify({ metricName: 'createdUsers.oauth' }));
     res.status(200).send({ message: 'Hola' });
   };
 

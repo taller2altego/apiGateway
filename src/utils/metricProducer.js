@@ -1,5 +1,4 @@
 const Kafka = require('node-rdkafka');
-// const logger = require('../../winston');
 
 const kafkaConf = {
   'group.id': 'cloudkarafka-example',
@@ -16,28 +15,21 @@ const kafkaConf = {
   debug: 'generic,broker,security'
 };
 
-
-
 module.exports = eventToLog => {
-  console.log('entro al producer');
-
   const topic = 'oqgbz3ul-metrics';
   const producer = new Kafka.Producer(kafkaConf);
 
   producer.on('ready', () => {
-    /* eslint-disable */
     const message = new Buffer.from(eventToLog);
     producer.produce(topic, -1, message, 1);
     setTimeout(() => producer.disconnect(), 0);
   });
 
   producer.on('disconnected', () => {
-    // logger.info('Se desconectó el cliente');
     console.log('se desconectó el cliente');
   });
 
   producer.on('event.error', err => {
-    // logger.(err);
     console.log('event.error');
     console.log(err);
   });
