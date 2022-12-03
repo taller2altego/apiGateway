@@ -47,13 +47,23 @@ paths:
             "application/json":
               schema:
                 $ref: "#/definitions/errors/unexpected"
-  /token/:
+  /recover:
     post:
       tags:
         - identity
-      summary: Identificacion de Usuarios
+      summary: Envia token recover password
       security:
         - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
       responses:
         200:
           description: Esta autorizado
@@ -72,6 +82,7 @@ paths:
       summary: Deslogueo de Usuarios
       security:
         - bearerAuth: []
+      
       responses:
         200:
           description: desconecta al user
@@ -86,8 +97,9 @@ definitions:
   login:
     type: object
     properties:
-      name:
+      email:
         type: string
+        format: email
       password:
         type: string
   identity:
