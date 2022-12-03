@@ -1,21 +1,27 @@
-const Kafka = require('node-rdkafka');
-
-const kafkaConf = {
-  'group.id': 'cloudkarafka-example',
-  'metadata.broker.list': [
-    'dory-01.srvs.cloudkafka.com:9094',
-    'dory-02.srvs.cloudkafka.com:9094',
-    'dory-03.srvs.cloudkafka.com:9094'
-  ],
-  'socket.keepalive.enable': true,
-  'security.protocol': 'SASL_SSL',
-  'sasl.mechanisms': 'SCRAM-SHA-256',
-  'sasl.username': 'oqgbz3ul',
-  'sasl.password': 'iaF7T41JyBkHHiR-Y4pMp9s9u_bhCbvb',
-  debug: 'generic,broker,security'
-};
-
 module.exports = eventToLog => {
+
+  console.log(process.env.NODE_ENV);
+  if (process.env.NODE_ENV === 'local') {
+    return;
+  }
+
+  const Kafka = require('node-rdkafka');
+
+  const kafkaConf = {
+    'group.id': 'cloudkarafka-example',
+    'metadata.broker.list': [
+      'dory-01.srvs.cloudkafka.com:9094',
+      'dory-02.srvs.cloudkafka.com:9094',
+      'dory-03.srvs.cloudkafka.com:9094'
+    ],
+    'socket.keepalive.enable': true,
+    'security.protocol': 'SASL_SSL',
+    'sasl.mechanisms': 'SCRAM-SHA-256',
+    'sasl.username': 'oqgbz3ul',
+    'sasl.password': 'iaF7T41JyBkHHiR-Y4pMp9s9u_bhCbvb',
+    debug: 'generic,broker,security'
+  };
+
   const topic = 'oqgbz3ul-metrics';
   const producer = new Kafka.Producer(kafkaConf);
 
