@@ -24,7 +24,7 @@ module.exports = eventToLog => {
     /* eslint-disable */
     console.log('Se loguea: ');
     console.log(eventToLog);
-    const message = new Buffer.from(JSON.stringify({ 'metricName': eventToLog }));
+    const message = new Buffer.from('eventToLog');
     producer.produce(topic, -1, message, Math.floor(Math.random() * 1000000));
   });
 
