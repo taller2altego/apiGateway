@@ -16,10 +16,14 @@ const kafkaConf = {
   debug: 'generic,broker,security'
 };
 
-const topic = 'oqgbz3ul-metrics';
-const producer = new Kafka.Producer(kafkaConf);
+
 
 module.exports = eventToLog => {
+  console.log('entro al producer');
+
+  const topic = 'oqgbz3ul-metrics';
+  const producer = new Kafka.Producer(kafkaConf);
+
   producer.on('ready', () => {
     /* eslint-disable */
     console.log('Se loguea: ');
@@ -30,16 +34,18 @@ module.exports = eventToLog => {
 
   producer.on('disconnected', () => {
     // logger.info('Se desconectó el cliente');
-    console.log('se desconectó el cliente')
+    console.log('se desconectó el cliente');
   });
 
   producer.on('event.error', err => {
     // logger.(err);
+    console.log('event.error');
     console.log(err);
   });
 
   producer.on('event.log', log => {
     // logger.log(log);
+    console.log('event.log');
     console.log(log)
   });
 
