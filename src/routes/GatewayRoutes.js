@@ -61,6 +61,7 @@ module.exports = app => {
   router.get('/users/:id', validateToken, user.findUserById, handlerResponse);
   router.patch('/users/:id/location', validateToken, user.patchDefaultLocationByUserId, handlerResponse);
   router.patch('/users/:id', validateToken, user.patchUserById, handlerResponse);
+  router.patch('/users/', user.patchUserByEmail, handlerResponse);
   router.delete('/users/:id', validateToken, user.removeUserById, handlerResponse);
 
   // driver
@@ -77,6 +78,7 @@ module.exports = app => {
   router.post('/login', checkUserByEmailAndPassword(CommonMethod), checkAdminLogin, identity.signIn, handlerResponse);
   router.post('/recover', checkUserByEmail, identity.sendEmail, handlerResponse);
   router.post('/logout', validateToken, identity.signOut, handlerResponse);
+  router.post('/auth', identity.validateToken, handlerResponse);
 
   // travel
   router.get('/travels', validateToken, TravelController.findTravels, handlerResponse);

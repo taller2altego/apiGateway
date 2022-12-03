@@ -1,32 +1,32 @@
 paths:
   /users/changePassword:
-      post:
-        tags:
-          - users
-        summary: Cambio de password
-        security:
+    post:
+      tags:
+        - users
+      summary: Cambio de password
+      security:
         - bearerAuth: []
-        requestBody: 
-          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/changePass"
+      responses:
+        204:
+          description: se envio el email para el cambio de password
+        404:
+          description: el usuario a ser consultado no existe
           content:
-            application/json:
+            "application/json":
               schema:
-                $ref: "#/definitions/changePass"
-        responses:
-          204:
-            description: se envio el email para el cambio de password
-          404:
-            description: el usuario a ser consultado no existe
-            content:
-              "application/json":
-                schema:
-                  $ref: "#/definitions/errors/userNotFound"
-          500:
-            description: error no identificado
-            content:
-              "application/json":
-                schema:
-                  $ref: "#/definitions/errors/unexpected"
+                $ref: "#/definitions/errors/userNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
   /users/:
     post:
       tags:
@@ -37,7 +37,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/definitions/postBody"
+              type: object
+              properties:
+                name:
+                  type: string
+                lastname:
+                  type: string
+                phoneNumber:
+                  type: integer
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                role:
+                  type: string
       responses:
         200:
           description: devuelve toda la información del user creado menos la password
@@ -122,75 +136,46 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: "#/definitions/errors/unexpected" 
+                $ref: "#/definitions/errors/unexpected"
     patch:
-      tags:
-        - users
-      summary: Actualiza un usuario
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: userId
-          schema:
-            type: integer
-          required: true
-          minimum: 1
-          description: Es el ID asociado al usuario
-      requestBody:
-        required: true
-        content:
-          application/json:
+        tags:
+          - users
+        summary: Actualiza un usuario
+        security:
+          - bearerAuth: []
+        parameters:
+          - in: path
+            name: userId
             schema:
-              $ref: "#/definitions/postBody"
-      responses:
-        200:
-          description: Edición exitosa
-          content:
-            "application/json":
-              schema:
-                type: object
-        404:
-          description: el usuario a ser consultado no existe
-          content:
-            "application/json":
-              schema:
-                $ref: "#/definitions/errors/userNotFound"
-        500:
-          description: error no identificado
-          content:
-            "application/json":
-              schema:
-                $ref: "#/definitions/errors/unexpected"
-    delete:
-      tags:
-        - users
-      summary: Elimina un usuario
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: userId
-          schema:
-            type: integer
+              type: integer
+            required: true
+            minimum: 1
+            description: Es el ID asociado al usuario
+        requestBody:
           required: true
-          minimum: 1
-          description: Es el ID asociado al usuario
-      responses:
-        204:
-          description: eliminación exitosa
-        404:
-          description: el usuario a ser consultado no existe
           content:
-            "application/json":
+            application/json:
               schema:
-                $ref: "#/definitions/errors/userNotFound"
-        500:
-          description: error no identificado
-          content:
-            "application/json":
-              schema:
-                $ref: "#/definitions/errors/unexpected"
+                $ref: "#/definitions/postBody"
+        responses:
+          200:
+            description: Edición exitosa
+            content:
+              "application/json":
+                schema:
+                  type: object
+          404:
+            description: el usuario a ser consultado no existe
+            content:
+              "application/json":
+                schema:
+                  $ref: "#/definitions/errors/userNotFound"
+          500:
+            description: error no identificado
+            content:
+              "application/json":
+                schema:
+                  $ref: "#/definitions/errors/unexpected"
   /users/{userId}/location:
     patch:
       tags:
@@ -255,7 +240,7 @@ definitions:
       email:
         type: string
         format: email
-      newPassword: 
+      newPassword:
         type: string
   user:
     type: object

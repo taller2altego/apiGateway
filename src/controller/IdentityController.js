@@ -46,6 +46,17 @@ class IdentityController {
         next();
       });
   }
+
+  async validateToken(req, res, next) {
+    const url = process.env.identity_microservice || endpoints.identityMicroservice;
+    return post(`${url}/token`, {}, { authorization: req.headers.authorization })
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => handlerResponse(error))
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
+  }
 }
 
 module.exports = new IdentityController();
