@@ -26,10 +26,9 @@ module.exports = eventToLog => {
 
   producer.on('ready', () => {
     /* eslint-disable */
-    console.log('Se loguea: ');
-    console.log(eventToLog);
-    const message = new Buffer.from('eventToLog');
-    producer.produce(topic, -1, message, Math.floor(Math.random() * 1000000));
+    const message = new Buffer.from(eventToLog);
+    producer.produce(topic, -1, message, 1);
+    setTimeout(() => producer.disconnect(), 0);
   });
 
   producer.on('disconnected', () => {

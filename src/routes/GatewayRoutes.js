@@ -24,7 +24,7 @@ module.exports = app => {
     // statsD.increment('blockedUsers');
     // statsD.increment('loginUsers.oauth');
     // statsD.increment('createdUsers.oauth');
-    metricProducer({ metricName: 'blockedUsers' });
+    metricProducer(JSON.stringify({ metricName: 'blockedUsers' }));
     res.status(200).send({ message: 'Hola' });
   };
 
