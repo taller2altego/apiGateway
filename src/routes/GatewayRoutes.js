@@ -69,7 +69,6 @@ module.exports = app => {
   router.patch('/users/:id/location', validateToken, user.patchDefaultLocationByUserId, handlerResponse);
   router.patch('/users/:id', validateToken, user.patchUserById, handlerResponse);
   router.patch('/users/', user.patchUserByEmail, handlerResponse);
-  router.delete('/users/:id', validateToken, user.removeUserById, handlerResponse);
 
   // driver
   router.post('/users/:userId/driver', validateToken, driver.associateDriverToUser, handlerResponse);

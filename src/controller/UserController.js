@@ -94,17 +94,6 @@ class UserController {
       });
   }
 
-  removeUserById(req, res, next) {
-    const url = process.env.user_microservice || endpoints.userMicroservice;
-    return remove(`${url}/users/${req.params.id}`, { ...req.query })
-      .then(axiosResponse => handlerResponse(axiosResponse))
-      .catch(error => handlerResponse(error))
-      .then(response => {
-        res.customResponse = response;
-        next();
-      });
-  }
-
   associateDriverToUser(req, res, next) {
     const url = process.env.user_microservice || endpoints.userMicroservice;
     return post(`${url}/users/${req.params.id}/driver`, req.body)
