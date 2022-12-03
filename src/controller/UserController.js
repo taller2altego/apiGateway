@@ -137,6 +137,17 @@ class UserController {
         next();
       });
   }
+
+  patchUserByEmail(req, res, next) {
+    const url = process.env.user_microservice || endpoints.userMicroservice;
+    return patch(`${url}/users`, req.body, {}, { ...req.query })
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => handlerResponse(error))
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
+  }
 }
 
 module.exports = new UserController();
