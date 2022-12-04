@@ -8,64 +8,93 @@ paths:
         - bearerAuth: []
       requestBody:
         required: true
-        content: 
-          application/json:
-            
-
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                price:
+                  type: number
+                  format: float
+                source:
+                  type: object
+                  properties:
+                    latitude:
+                      type: integer
+                    logitude:
+                      type: integer
+                destination:
+                  type: object
+                  properties:
+                    latitude:
+                      type: integer
+                    logitude:
+                      type: integer
+                sourceAddress:
+                  type: string
+                destinationAddress:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                paidWithCredits:
+                  type: boolean
       responses:
         200:
           description: creacion exitosa
           content:
             "application/json":
-                schema:
-                  type: object
-                  properties:
-                    data: 
-                      type: array
-                      items:  
-                        type: object
-                        properties:
-                          _id:
-                            type: string
-                          userId:
-                            type: integer
-                          price:
-                            type: integer
-                          source:
-                            type: object
-                            properties:
-                              latitude:
-                                type: integer
-                              logitude:
-                                type: integer
-                          destination:
-                            type: object
-                            properties:
-                              latitude:
-                                type: integer
-                              logitude:
-                                type: integer
-                          destinationAddress:
-                            type: string
-                          sourceAddress:
-                            type: string
-                          date:
-                            type: string
-                          __v:
-                            type: integer
-                          currentDriverPosition:
-                            type: object
-                            properties:
-                              latitude:
-                                type: integer
-                              logitude:
-                                type: integer
-                    limit:
-                      type: integer
-                    page:
-                      type: integer
-                    total:
-                      type: integer
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                        userId:
+                          type: integer
+                        price:
+                          type: integer
+                        source:
+                          type: object
+                          properties:
+                            latitude:
+                              type: number
+                            logitude:
+                              type: number
+                        destination:
+                          type: object
+                          properties:
+                            latitude:
+                              type: number
+                            logitude:
+                              type: number
+                        destinationAddress:
+                          type: string
+                        sourceAddress:
+                          type: string
+                        date:
+                          type: string
+                        __v:
+                          type: integer
+                        currentDriverPosition:
+                          type: object
+                          properties:
+                            latitude:
+                              type: number
+                            logitude:
+                              type: number
+                  limit:
+                    type: integer
+                  page:
+                    type: integer
+                  total:
+                    type: integer
           404:
             description: el conductor a ser consultado no existe
             content:
@@ -78,11 +107,11 @@ paths:
               "application/json":
                 schema:
                   $ref: "#/definitions/errors/unexpected"
-  /travels/users/{userdId}:
-    post:
+  /travels/users/{userId}:
+    get:
       tags:
         - travels
-      summary: Crea un viaje
+      summary: Busca travels de un user
       security:
         - bearerAuth: []
       parameters:
@@ -93,6 +122,13 @@ paths:
           required: true
           minimum: 1
           description: Es el ID asociado al viaje
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+          minimum: 1
+          description: Pagina de travels a ver
       responses:
         200:
           description: creacion exitosa
@@ -149,7 +185,7 @@ paths:
         - in: path
           name: travelId
           schema:
-            type: integer
+            type: string
           required: true
           minimum: 1
           description: Es el ID asociado al viaje
@@ -159,6 +195,16 @@ paths:
           application/json:
             schema:
               type: object
+              properties:
+                driverId:
+                  type: integer
+                currentDriverPosition:
+                  type: object
+                  properties:
+                    latitude:
+                      type: number
+                    longitude:
+                      type: number
       responses:
         200:
           description: devuelve toda la información del viaje asociado a un usuario
@@ -190,7 +236,7 @@ paths:
         - in: path
           name: travelId
           schema:
-            type: integer
+            type: string
           required: true
           minimum: 1
           description: Es el ID asociado al viaje
@@ -228,12 +274,12 @@ paths:
         - bearerAuth: []
       parameters:
         - in: path
-          name: driverId
+          name: travelId
           schema:
-            type: integer
+            type: string
           required: true
           minimum: 1
-          description: Es el ID asociado al conductor
+          description: Es el ID asociado al viaje
       responses:
         200:
           description: edición exitosa
@@ -262,12 +308,12 @@ paths:
         - bearerAuth: []
       parameters:
         - in: path
-          name: driverId
+          name: travelId
           schema:
-            type: integer
+            type: string
           required: true
           minimum: 1
-          description: Es el ID asociado al conductor
+          description: Es el ID asociado al viaje
       responses:
         200:
           description: edición exitosa
@@ -296,24 +342,26 @@ paths:
         - bearerAuth: []
       parameters:
         - in: path
-          name: driverId
+          name: travelId
           schema:
-            type: integer
+            type: string
           required: true
           minimum: 1
-          description: Es el ID asociado al conductor
+          description: Es el ID del viaje
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              currentDriverPosition:
-                type: object
-                latitude:
-                  type: float
-                longitude:
-                  type: float
+              properties:
+                currentDriverPosition:
+                  type: object
+                  properties:
+                    latitude:
+                      type: number
+                    longitude:
+                      type: number
 
       responses:
         200:

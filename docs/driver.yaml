@@ -39,7 +39,36 @@ paths:
             "application/json":
               schema:
                 $ref: "#/definitions/errors/unexpected"
-    /drivers/{userId}:
+  /drivers/{driverId}:
+    delete:
+      tags:
+        - driver
+      summary: Elimina un conductor
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: driverId
+          schema:
+            type: integer
+          required: true
+          minimum: 1
+          description: Es el ID asociado al conductor
+      responses:
+        204:
+          description: eliminación exitosa
+        404:
+          description: el conductor a ser consultado no existe
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/userNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
     get:
       tags:
         - driver
@@ -48,12 +77,12 @@ paths:
         - bearerAuth: []
       parameters:
         - in: path
-          name: userId
+          name: driverId
           schema:
             type: integer
           required: true
           minimum: 1
-          description: Es el ID asociado al usuario
+          description: Es el ID asociado al conductor
       responses:
         200:
           description: devuelve toda la información del conductor asociado a un usuario
@@ -81,13 +110,6 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - in: path
-          name: userId
-          schema:
-            type: integer
-          required: true
-          minimum: 1
-          description: Es el ID asociado al usuario
         - in: path
           name: driverId
           schema:
@@ -120,42 +142,7 @@ paths:
             "application/json":
               schema:
                 $ref: "#/definitions/errors/unexpected"
-    delete:
-      tags:
-        - driver
-      summary: Elimina un conductor
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: userId
-          schema:
-            type: integer
-          required: true
-          minimum: 1
-          description: Es el ID asociado al usuario
-        - in: path
-          name: driverId
-          schema:
-            type: integer
-          required: true
-          minimum: 1
-          description: Es el ID asociado al conductor
-      responses:
-        204:
-          description: eliminación exitosa
-        404:
-          description: el conductor a ser consultado no existe
-          content:
-            "application/json":
-              schema:
-                $ref: "#/definitions/errors/userNotFound"
-        500:
-          description: error no identificado
-          content:
-            "application/json":
-              schema:
-                $ref: "#/definitions/errors/unexpected"
+    
 
 definitions:
   postBody:
@@ -178,7 +165,7 @@ definitions:
       email:
         type: string
         format: email
-      newPassword: 
+      newPassword:
         type: string
   user:
     type: object
