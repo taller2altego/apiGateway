@@ -145,6 +145,17 @@ class UserController {
         next();
       });
   }
+
+  sendReport(req, res, next) {
+    const url = process.env.user_microservice || endpoints.userMicroservice;
+    return post(`${url}/reports`, req.body)
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => handlerResponse(error))
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
+  }
 }
 
 module.exports = new UserController();
