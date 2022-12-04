@@ -1,14 +1,11 @@
 const jwt = require('jsonwebtoken');
 const { endpoints } = require('config');
-
-const Metrics = require('hot-shots');
 const {
   post, get, patch, remove
 } = require('../utils/axios');
 const handlerResponse = require('../utils/handlerResponse');
 const logger = require('../../winston');
-
-const statsD = new Metrics();
+const metricProducer = require('../utils/metricProducer');
 
 const patchUserById = (req, res, next) => {
   const url = process.env.user_microservice || endpoints.userMicroservice;
@@ -32,7 +29,7 @@ class UserController {
       .then(axiosResponse => handlerResponse(axiosResponse, {}))
       .catch(error => handlerResponse(error))
       .then(response => {
-        statsD.increment('createdUsers.emailAndPassword');
+        metricProducer(JSON.stringify({ metricName: 'createdUsers.emailAndPassword' }));
         res.customResponse = response;
         next();
       });
@@ -67,7 +64,7 @@ class UserController {
         await post(`${identityUrl}/block`, { email: req.body.email });
         return patchUserById(req, res, next)
           .then(response => {
-            statsD.increment('blockedUsers');
+            metricProducer(JSON.stringify({ metricName: 'blockedUsers' }));
             return response;
           });
       }
