@@ -29,7 +29,7 @@ class UserController {
       .then(axiosResponse => handlerResponse(axiosResponse, {}))
       .catch(error => handlerResponse(error))
       .then(response => {
-        metricProducer(JSON.stringify({ metricName: 'createdUsers.emailAndPassword' }));
+        metricProducer(JSON.stringify({ metricName: 'createdUsers.emailAndPassword', metricType: 'increment' }));
         res.customResponse = response;
         next();
       });
@@ -64,7 +64,7 @@ class UserController {
         await post(`${identityUrl}/block`, { email: req.body.email });
         return patchUserById(req, res, next)
           .then(response => {
-            metricProducer(JSON.stringify({ metricName: 'blockedUsers' }));
+            metricProducer(JSON.stringify({ metricName: 'blockedUsers', metricType: 'increment' }));
             return response;
           });
       }

@@ -3,6 +3,7 @@ const { endpoints } = require('config');
 const { post, get, patch } = require('../utils/axios');
 const handlerResponse = require('../utils/handlerResponse');
 const logger = require('../../winston');
+const metricProducer = require('../utils/metricProducer');
 
 class TravelController {
   findTravels(req, res, next) {
@@ -65,7 +66,19 @@ class TravelController {
     return (req, res, next) => {
       const url = process.env.travel_microservice || endpoints.travelMicroservice;
       return post(`${url}/travels/${req.params.travelId}/${state}`, req.body)
-        .then(axiosResponse => handlerResponse(axiosResponse))
+        .then(async axiosResponse => {
+          if (state == 'finish'){
+            await get(`${url}/travels/${req.params.travelId}`).then((data) => {
+              var init = new Date(data.data.data.date);
+              var finish = new Date()
+              var diffMs = (finish - init);
+              var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
+              console.log(diffMins)
+              metricProducer(JSON.stringify({ metricName: 'travel.duration', metricType: 'histogram', metricValue:diffMins }));
+            })
+          }
+          return handlerResponse(axiosResponse)
+        })
         .catch(error => {
           logger.error(JSON.stringify(error, undefined, 2));
           return handlerResponse(error);
