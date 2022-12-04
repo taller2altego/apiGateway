@@ -43,7 +43,7 @@ class TravelController {
         return handlerResponse(error);
       })
       .then(response => {
-        metricProducer(JSON.stringify({ metricName: 'travel.createTravel', metricType: 'increment'}));
+        metricProducer(JSON.stringify({ metricName: 'travel.createTravel', metricType: 'increment' }));
         res.customResponse = response;
         next();
       });
@@ -68,17 +68,16 @@ class TravelController {
       const url = process.env.travel_microservice || endpoints.travelMicroservice;
       return post(`${url}/travels/${req.params.travelId}/${state}`, req.body)
         .then(async axiosResponse => {
-          if (state == 'finish'){
-            await get(`${url}/travels/${req.params.travelId}`).then((data) => {
-              var init = new Date(data.data.data.date);
-              var finish = new Date()
-              var diffMs = (finish - init);
-              var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
-              console.log(diffMins)
-              metricProducer(JSON.stringify({ metricName: 'travel.duration', metricType: 'histogram', metricValue:diffMins }));
-            })
+          if (state === 'finish') {
+            await get(`${url}/travels/${req.params.travelId}`).then(data => {
+              const init = new Date(data.data.data.date);
+              const finish = new Date();
+              const diffMs = (finish - init);
+              const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
+              metricProducer(JSON.stringify({ metricName: 'travel.duration', metricType: 'histogram', metricValue: diffMins }));
+            });
           }
-          return handlerResponse(axiosResponse)
+          return handlerResponse(axiosResponse);
         })
         .catch(error => {
           logger.error(JSON.stringify(error, undefined, 2));
@@ -206,7 +205,6 @@ class TravelController {
 
   test(req, res, next) {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
-    console.log(req.query);
     return get(`${url}/travels/test`, { ...req.query })
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => {

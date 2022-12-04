@@ -2,7 +2,6 @@
 const { constants: { OAuthMethod, CommonMethod } } = require('config');
 const router = require('express').Router();
 
-
 const user = require('../controller/UserController');
 const driver = require('../controller/DriverController');
 const identity = require('../controller/IdentityController');
@@ -24,8 +23,8 @@ module.exports = app => {
     metricProducer(JSON.stringify({ metricName: 'createdUsers.emailAndPassword', metricType: 'increment' }));
     metricProducer(JSON.stringify({ metricName: 'blockedUsers', metricType: 'increment' }));
     metricProducer(JSON.stringify({ metricName: 'loginUsers.oauth', metricType: 'increment' }));
-    metricProducer(JSON.stringify({ metricName: 'createdUsers.oauth', metricType: 'increment'}));
-    metricProducer(JSON.stringify({ metricName: 'travel.createTravel', metricType: 'increment'}));
+    metricProducer(JSON.stringify({ metricName: 'createdUsers.oauth', metricType: 'increment' }));
+    metricProducer(JSON.stringify({ metricName: 'travel.createTravel', metricType: 'increment' }));
     metricProducer(JSON.stringify({ metricName: 'travel.duration', metricType: 'histogram', metricValue: Math.floor(Math.random() * 60) }));
     res.status(200).send({ message: 'Hola' });
   };
