@@ -18,7 +18,7 @@ class IdentityController {
       .then(axiosResponse => handlerResponse(axiosResponse, { id }))
       .catch(error => handlerResponse(error))
       .then(response => {
-        metricProducer(JSON.stringify({ metricName: 'loginUsers.emailAndPassword' }));
+        metricProducer(JSON.stringify({ metricName: 'loginUsers.emailAndPassword', metricType: 'increment' }));
         res.customResponse = response;
         next();
       });
@@ -41,7 +41,7 @@ class IdentityController {
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
-        metricProducer(JSON.stringify({ metricName: 'recoverPassword' }));
+        metricProducer(JSON.stringify({ metricName: 'recoverPassword', metricType: 'increment' }));
         res.customResponse = response;
         next();
       });

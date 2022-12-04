@@ -18,7 +18,7 @@ const oauthCheck = async (req, res, next) => {
 
   return get(`${url}/users/login/oauth?email=${email}`)
     .then(({ data: { data } }) => {
-      metricProducer(JSON.stringify({ metricName: 'loginUsers.oauth' }));
+      metricProducer(JSON.stringify({ metricName: 'loginUsers.oauth', metricType: 'increment' }));
       req.body = req.customBody.oauthData;
       req.customBody = { id: data.id, isAdmin: data.isAdmin, isSuperadmin: data.isSuperadmin };
       next();
@@ -28,7 +28,11 @@ const oauthCheck = async (req, res, next) => {
       const log = { ...otherFields, statusCode };
 
       if (statusCode === 404) {
-        return post(`${url}/users/oauth`, req.customBody.oauthData).then().catch(handlerOauthCatch);
+        return post(`${url}/users/oauth`, req.customBody.oauthData)
+          .then(() => {
+            metricProducer(JSON.stringify({ metricName: 'createdUsers.oauth', metricType: 'increment' }));
+          })
+          .catch(handlerOauthCatch);
       }
       logger.error(JSON.stringify(log));
       return res.status(statusCode).send(otherFields);

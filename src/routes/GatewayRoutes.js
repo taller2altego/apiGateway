@@ -18,12 +18,14 @@ const metricProducer = require('../utils/metricProducer');
 
 module.exports = app => {
   const testingMetrics = (req, res) => {
-    metricProducer(JSON.stringify({ metricName: 'loginUsers.emailAndPassword' }));
-    metricProducer(JSON.stringify({ metricName: 'recoverPassword' }));
-    metricProducer(JSON.stringify({ metricName: 'createdUsers.emailAndPassword' }));
-    metricProducer(JSON.stringify({ metricName: 'blockedUsers' }));
-    metricProducer(JSON.stringify({ metricName: 'loginUsers.oauth' }));
-    metricProducer(JSON.stringify({ metricName: 'createdUsers.oauth' }));
+    metricProducer(JSON.stringify({ metricName: 'loginUsers.emailAndPassword', metricType: 'increment' }));
+    metricProducer(JSON.stringify({ metricName: 'recoverPassword', metricType: 'increment' }));
+    metricProducer(JSON.stringify({ metricName: 'createdUsers.emailAndPassword', metricType: 'increment' }));
+    metricProducer(JSON.stringify({ metricName: 'blockedUsers', metricType: 'increment' }));
+    metricProducer(JSON.stringify({ metricName: 'loginUsers.oauth', metricType: 'increment' }));
+    metricProducer(JSON.stringify({ metricName: 'createdUsers.oauth', metricType: 'increment' }));
+    metricProducer(JSON.stringify({ metricName: 'travel.createTravel', metricType: 'increment' }));
+    metricProducer(JSON.stringify({ metricName: 'travel.duration', metricType: 'histogram', metricValue: Math.floor(Math.random() * 60) }));
     res.status(200).send({ message: 'Hola' });
   };
 
