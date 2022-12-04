@@ -43,6 +43,7 @@ class TravelController {
         return handlerResponse(error);
       })
       .then(response => {
+        metricProducer(JSON.stringify({ metricName: 'travel.createTravel', metricType: 'increment'}));
         res.customResponse = response;
         next();
       });
