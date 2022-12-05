@@ -1,21 +1,9 @@
 name: Fiuber Api Gateway CI
 on: push
 jobs:
-  check-formatting:
-    runs-on: ubuntu-latest
-    name: Check Formatting
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "16"
-
-      - run: npm ci
-      - run: npx prettier --check .
-  
   check-linter:
     runs-on: ubuntu-latest
-    name: Check Linter
+    name: Check Linter and Format
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
