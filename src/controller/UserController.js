@@ -1,14 +1,11 @@
 const jwt = require('jsonwebtoken');
 const { endpoints } = require('config');
-
-const Metrics = require('hot-shots');
 const {
-  post, get, patch, remove
+  post, get, patch
 } = require('../utils/axios');
 const handlerResponse = require('../utils/handlerResponse');
 const logger = require('../../winston');
-
-const statsD = new Metrics();
+const metricProducer = require('../utils/metricProducer');
 
 const patchUserById = (req, res, next) => {
   const url = process.env.user_microservice || endpoints.userMicroservice;
@@ -27,15 +24,18 @@ const patchUserById = (req, res, next) => {
 
 class UserController {
   signUp(req, res, next) {
-    const url = process.env.user_microservice || endpoints.userMicroservice;
-    return post(`${url}/users`, req.body, {}, { ...req.query })
-      .then(axiosResponse => handlerResponse(axiosResponse, {}))
-      .catch(error => handlerResponse(error))
-      .then(response => {
-        statsD.increment('createdUsers.emailAndPassword');
-        res.customResponse = response;
-        next();
-      });
+    const urlUsers = process.env.user_microservice || endpoints.userMicroservice;
+    const urlWallet = process.env.paymentMicroservice || endpoints.paymentMicroservice;
+    return post(`${urlWallet}/payments/wallet/${req.body.email}`)
+      .then(() => post(`${urlUsers}/users`, req.body, {}, { ...req.query })
+        .then(axiosResponse => handlerResponse(axiosResponse, {}))
+        .catch(error => handlerResponse(error))
+        .then(response => {
+          metricProducer(JSON.stringify({ metricName: 'createdUsers.emailAndPassword', metricType: 'increment' }));
+          res.customResponse = response;
+          next();
+        }))
+      .catch(error => handlerResponse(error));
   }
 
   findAllUsers(req, res, next) {
@@ -67,7 +67,7 @@ class UserController {
         await post(`${identityUrl}/block`, { email: req.body.email });
         return patchUserById(req, res, next)
           .then(response => {
-            statsD.increment('blockedUsers');
+            metricProducer(JSON.stringify({ metricName: 'blockedUsers', metricType: 'increment' }));
             return response;
           });
       }
@@ -88,17 +88,6 @@ class UserController {
         logger.error(JSON.stringify(error, undefined, 2));
         return handlerResponse(error);
       })
-      .then(response => {
-        res.customResponse = response;
-        next();
-      });
-  }
-
-  removeUserById(req, res, next) {
-    const url = process.env.user_microservice || endpoints.userMicroservice;
-    return remove(`${url}/users/${req.params.id}`, { ...req.query })
-      .then(axiosResponse => handlerResponse(axiosResponse))
-      .catch(error => handlerResponse(error))
       .then(response => {
         res.customResponse = response;
         next();

@@ -1,11 +1,9 @@
 const { constants: { OAuthMethod }, endpoints: { userMicroservice } } = require('config');
-const Metrics = require('hot-shots');
-
-const statsD = new Metrics();
 
 const handlerResponse = require('../utils/handlerResponse');
 const { get, post } = require('../utils/axios');
 const logger = require('../../winston');
+const metricProducer = require('../utils/metricProducer');
 
 const oauthCheck = async (req, res, next) => {
   const url = process.env.user_microservice || userMicroservice;
@@ -20,7 +18,7 @@ const oauthCheck = async (req, res, next) => {
 
   return get(`${url}/users/login/oauth?email=${email}`)
     .then(({ data: { data } }) => {
-      statsD.increment('loginUsers.oauth');
+      metricProducer(JSON.stringify({ metricName: 'loginUsers.oauth', metricType: 'increment' }));
       req.body = req.customBody.oauthData;
       req.customBody = { id: data.id, isAdmin: data.isAdmin, isSuperadmin: data.isSuperadmin };
       next();
@@ -30,7 +28,11 @@ const oauthCheck = async (req, res, next) => {
       const log = { ...otherFields, statusCode };
 
       if (statusCode === 404) {
-        return post(`${url}/users/oauth`, req.customBody.oauthData).then().catch(handlerOauthCatch);
+        return post(`${url}/users/oauth`, req.customBody.oauthData)
+          .then(() => {
+            metricProducer(JSON.stringify({ metricName: 'createdUsers.oauth', metricType: 'increment' }));
+          })
+          .catch(handlerOauthCatch);
       }
       logger.error(JSON.stringify(log));
       return res.status(statusCode).send(otherFields);
