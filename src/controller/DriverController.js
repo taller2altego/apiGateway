@@ -1,9 +1,8 @@
 const { endpoints } = require('config');
-
+const handlerResponse = require('../utils/handlerResponse');
 const {
   post, get, patch, remove
 } = require('../utils/axios');
-const handlerResponse = require('../utils/handlerResponse');
 
 class DriverController {
   associateDriverToUser(req, res, next) {
@@ -54,6 +53,35 @@ class DriverController {
     const url = process.env.driver_microservice || endpoints.driverMicroservice;
     return patch(`${url}/drivers/${req.params.driverId}`, req.body)
       .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => handlerResponse(error))
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
+  }
+
+  patchDriverOnPayment(req, res, next) {
+    const urlDrivers = process.env.driver_microservice || endpoints.driverMicroservice;
+    const urlUsers = process.env.user_microservice || endpoints.userMicroservice;
+    const urlWallet = process.env.paymentMicroservice || endpoints.paymentMicroservice;
+    const body = {
+      isTransaction: req.body.isTransaction,
+      balance: req.body.balance,
+      withdrawFunds: req.body.withdrawFunds
+    };
+
+    return patch(`${urlDrivers}/drivers/${req.params.driverId}`, body)
+      .then(async axiosResponse => {
+        if (req.body.withdrawFunds) {
+          const user = await get(`${urlUsers}/users/${req.body.userId}`);
+          return post(`${urlWallet}/payments/pay/${user.data.email}`, {
+            amountInEthers: req.body.balance.toString()
+          })
+            .then(() => handlerResponse(axiosResponse))
+            .catch(error => handlerResponse(error));
+        }
+        return handlerResponse(axiosResponse);
+      })
       .catch(error => handlerResponse(error))
       .then(response => {
         res.customResponse = response;
