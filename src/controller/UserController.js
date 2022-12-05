@@ -1,45 +1,41 @@
 const jwt = require('jsonwebtoken');
 const { endpoints } = require('config');
-
-const { post, get, patch, remove } = require('../utils/axios');
+const {
+  post, get, patch, remove
+} = require('../utils/axios');
 const handlerResponse = require('../utils/handlerResponse');
 const logger = require('../../winston');
+const metricProducer = require('../utils/metricProducer');
 
-const Metrics = require('hot-shots');
-const statsD = new Metrics();
-
-const _patchUserById = (req, res, next) => {
+const patchUserById = (req, res, next) => {
   const url = process.env.user_microservice || endpoints.userMicroservice;
 
   return patch(`${url}/users/${req.params.id}`, req.body, {}, { ...req.query })
     .then(axiosResponse => handlerResponse(axiosResponse))
     .catch(error => {
       logger.error(JSON.stringify(error, undefined, 2));
-      return handlerResponse(error)
+      return handlerResponse(error);
     })
     .then(response => {
       res.customResponse = response;
       next();
     });
-}
+};
 
 class UserController {
   signUp(req, res, next) {
     const urlUsers = process.env.user_microservice || endpoints.userMicroservice;
     const urlWallet = process.env.paymentMicroservice || endpoints.paymentMicroservice;
     return post(`${urlWallet}/payments/wallet/${req.body.email}`)
-      .then(() => {
-        return post(`${urlUsers}/users`, req.body, {}, { ...req.query })
-          .then(axiosResponse => handlerResponse(axiosResponse, {})
-          )
-          .catch(error => handlerResponse(error))
-          .then(response => {
-            statsD.increment('createdUsers.emailAndPassword');
-            res.customResponse = response;
-            next();
-          });
-      })
-      .catch((error) => handlerResponse(error));
+      .then(() => post(`${urlUsers}/users`, req.body, {}, { ...req.query })
+        .then(axiosResponse => handlerResponse(axiosResponse, {}))
+        .catch(error => handlerResponse(error))
+        .then(response => {
+          metricProducer(JSON.stringify({ metricName: 'createdUsers.emailAndPassword', metricType: 'increment' }));
+          res.customResponse = response;
+          next();
+        }))
+      .catch(error => handlerResponse(error));
   }
 
   findAllUsers(req, res, next) {
@@ -68,20 +64,34 @@ class UserController {
     try {
       if (req.body.isBlocked === true) {
         const identityUrl = process.env.identity_microservice || endpoints.identityMicroservice;
-        await post(`${identityUrl}/logout`, {}, { authorization: req.headers.authorization });
-        return _patchUserById(req, res, next)
-          .then(res => {
-            statsD.increment('blockedUsers');
-            return res;
+        await post(`${identityUrl}/block`, { email: req.body.email });
+        return patchUserById(req, res, next)
+          .then(response => {
+            metricProducer(JSON.stringify({ metricName: 'blockedUsers', metricType: 'increment' }));
+            return response;
           });
-      } else {
-        return _patchUserById(req, res, next);
       }
+      return patchUserById(req, res, next);
     } catch (error) {
       logger.error(JSON.stringify(error, undefined, 2));
       res.customResponse = handlerResponse(error);
-      next();
+      return next();
     }
+  }
+
+  patchDefaultLocationByUserId(req, res, next) {
+    const url = process.env.user_microservice || endpoints.userMicroservice;
+
+    return patch(`${url}/users/${req.params.id}/location`, req.body)
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => {
+        logger.error(JSON.stringify(error, undefined, 2));
+        return handlerResponse(error);
+      })
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
   }
 
   removeUserById(req, res, next) {
@@ -122,8 +132,30 @@ class UserController {
         res.customResponse = { statusCode: 204 };
         next();
       })
-      .catch((err) => {
+      .catch(err => {
         logger.error(JSON.stringify(err, undefined, 2));
+        next();
+      });
+  }
+
+  patchUserByEmail(req, res, next) {
+    const url = process.env.user_microservice || endpoints.userMicroservice;
+    return patch(`${url}/users`, req.body, {}, { ...req.query })
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => handlerResponse(error))
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
+  }
+
+  sendReport(req, res, next) {
+    const url = process.env.user_microservice || endpoints.userMicroservice;
+    return post(`${url}/reports`, req.body)
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => handlerResponse(error))
+      .then(response => {
+        res.customResponse = response;
         next();
       });
   }

@@ -6,7 +6,7 @@ class PaymentController {
   deposit(req, res, next) {
     const url = process.env.paymentMicroservice || endpoints.paymentMicroservice;
     const bodyDeposit = {
-      amountInEthers: req.body.amount.toString(),
+      amountInEthers: req.body.amount.toString()
     };
     return post(`${url}/payments/deposit/${req.params.email}`, bodyDeposit)
       .then(axiosResponse => handlerResponse(axiosResponse))
@@ -20,7 +20,7 @@ class PaymentController {
   pay(req, res, next) {
     const url = process.env.paymentMicroservice || endpoints.paymentMicroservice;
     const bodyDeposit = {
-      amountInEthers: req.body.amount.toString(),
+      amountInEthers: req.body.amount.toString()
     };
     return post(`${url}/payments/pay/${req.params.email}`, bodyDeposit)
       .then(axiosResponse => handlerResponse(axiosResponse))

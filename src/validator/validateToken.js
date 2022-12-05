@@ -1,6 +1,6 @@
 const { endpoints } = require('config');
 const logger = require('../../winston');
-const { post } = require("../utils/axios");
+const { post } = require('../utils/axios');
 const handlerResponse = require('../utils/handlerResponse');
 
 module.exports = (req, res, next) => {

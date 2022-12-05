@@ -1,0 +1,229 @@
+paths:
+  /users/{userId}/driver:
+    post:
+      tags:
+        - driver
+      summary: Asociación de un conductor a un usuario
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          minimum: 1
+          description: Es el ID asociado al usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/driverPostBody"
+      responses:
+        200:
+          description: devuelve toda la información del conductor asociado a un usuario
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/driver"
+        404:
+          description: el conductor a ser consultado no existe
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/userNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+  /drivers/{driverId}:
+    delete:
+      tags:
+        - driver
+      summary: Elimina un conductor
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: driverId
+          schema:
+            type: integer
+          required: true
+          minimum: 1
+          description: Es el ID asociado al conductor
+      responses:
+        204:
+          description: eliminación exitosa
+        404:
+          description: el conductor a ser consultado no existe
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/userNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+    get:
+      tags:
+        - driver
+      summary: Consulta de todos los conductores asociados a un usuario
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: driverId
+          schema:
+            type: integer
+          required: true
+          minimum: 1
+          description: Es el ID asociado al conductor
+      responses:
+        200:
+          description: devuelve toda la información del conductor asociado a un usuario
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/driver"
+        404:
+          description: el driver a ser consultado no existe
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/userNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+
+    patch:
+      tags:
+        - driver
+      summary: Actualiza un conductor
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: driverId
+          schema:
+            type: integer
+          required: true
+          minimum: 1
+          description: Es el ID asociado al conductor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/driverPostBody"
+      responses:
+        200:
+          description: edición exitosa
+          content:
+            "application/json":
+              schema:
+                type: object
+        404:
+          description: el conductor a ser consultado no existe
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/userNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+    
+
+definitions:
+  postBody:
+    type: object
+    properties:
+      name:
+        type: string
+      lastname:
+        type: string
+      phoneNumber:
+        type: integer
+      email:
+        type: string
+        format: email
+      password:
+        type: string
+  changePass:
+    type: object
+    propierties:
+      email:
+        type: string
+        format: email
+      newPassword:
+        type: string
+  user:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      lastname:
+        type: string
+      phoneNumber:
+        type: integer
+      email:
+        type: string
+        format: email
+
+  driverPostBody:
+    type: object
+    properties:
+      license:
+        type: string
+      model:
+        type: string
+      licensePlate:
+        type: string
+
+  driver:
+    type: object
+    properties:
+      id:
+        type: integer
+      userId:
+        type: integer
+      license:
+        type: string
+      model:
+        type: string
+      licensePlate:
+        type: string
+  errors:
+    userNotFound:
+      type: object
+      properties:
+        message:
+          type: string
+
+    unexpected:
+      type: object
+      properties:
+        message:
+          type: string
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []

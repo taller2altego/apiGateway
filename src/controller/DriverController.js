@@ -1,6 +1,8 @@
 const { endpoints } = require('config');
 const handlerResponse = require('../utils/handlerResponse');
-const { post, get, patch, remove } = require('../utils/axios');
+const {
+  post, get, patch, remove
+} = require('../utils/axios');
 
 class DriverController {
   associateDriverToUser(req, res, next) {
@@ -15,7 +17,7 @@ class DriverController {
   }
 
   async findAllDrivers(req, res, next) {
-    const url = process.env.user_microservice || endpoints.driverMicroservice;
+    const url = process.env.driver_microservice || endpoints.driverMicroservice;
     return get(`${url}/drivers`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
@@ -26,7 +28,7 @@ class DriverController {
   }
 
   findDriverById(req, res, next) {
-    const url = process.env.user_microservice || endpoints.driverMicroservice;
+    const url = process.env.driver_microservice || endpoints.driverMicroservice;
     return get(`${url}/drivers/${req.params.driverId}`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
@@ -36,10 +38,21 @@ class DriverController {
       });
   }
 
+  findAllReportsByDriverId(req, res, next) {
+    const url = process.env.driver_microservice || endpoints.driverMicroservice;
+    return get(`${url}/drivers/${req.params.driverId}/reports`)
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => handlerResponse(error))
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
+  }
+
   patchDriverById(req, res, next) {
-    const urlDrivers = process.env.user_microservice || endpoints.driverMicroservice;
-    return patch(`${urlDrivers}/drivers/${req.params.driverId}`, req.body)
-      .then(async (axiosResponse) => handlerResponse(axiosResponse))
+    const url = process.env.driver_microservice || endpoints.driverMicroservice;
+    return patch(`${url}/drivers/${req.params.driverId}`, req.body)
+      .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))
       .then(response => {
         res.customResponse = response;
@@ -56,25 +69,20 @@ class DriverController {
       balance: req.body.balance,
       withdrawFunds: req.body.withdrawFunds
     };
-    
+
     return patch(`${urlDrivers}/drivers/${req.params.driverId}`, body)
-      .then(async (axiosResponse) => {
+      .then(async axiosResponse => {
         if (req.body.withdrawFunds) {
           const user = await get(`${urlUsers}/users/${req.body.userId}`);
           return post(`${urlWallet}/payments/pay/${user.data.email}`, {
             amountInEthers: req.body.balance.toString()
           })
-            .then(() => {
-              return handlerResponse(axiosResponse);
-            })
-            .catch((error) => {
-              return handlerResponse(error);
-            })
+            .then(() => handlerResponse(axiosResponse))
+            .catch(error => handlerResponse(error));
         }
+        return handlerResponse(axiosResponse);
       })
-      .catch(error => {
-        return handlerResponse(error);
-      })
+      .catch(error => handlerResponse(error))
       .then(response => {
         res.customResponse = response;
         next();
@@ -82,7 +90,7 @@ class DriverController {
   }
 
   removeDriverById(req, res, next) {
-    const url = process.env.user_microservice || endpoints.driverMicroservice;
+    const url = process.env.driver_microservice || endpoints.driverMicroservice;
     return remove(`${url}/drivers/${req.params.driverId}`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => handlerResponse(error))

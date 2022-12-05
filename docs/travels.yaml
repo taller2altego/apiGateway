@@ -1,0 +1,468 @@
+paths:
+  /travels:
+    post:
+      tags:
+        - travels
+      summary: Crea un viaje
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                price:
+                  type: number
+                  format: float
+                source:
+                  type: object
+                  properties:
+                    latitude:
+                      type: integer
+                    logitude:
+                      type: integer
+                destination:
+                  type: object
+                  properties:
+                    latitude:
+                      type: integer
+                    logitude:
+                      type: integer
+                sourceAddress:
+                  type: string
+                destinationAddress:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                paidWithCredits:
+                  type: boolean
+      responses:
+        200:
+          description: creacion exitosa
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                        userId:
+                          type: integer
+                        price:
+                          type: integer
+                        source:
+                          type: object
+                          properties:
+                            latitude:
+                              type: number
+                            logitude:
+                              type: number
+                        destination:
+                          type: object
+                          properties:
+                            latitude:
+                              type: number
+                            logitude:
+                              type: number
+                        destinationAddress:
+                          type: string
+                        sourceAddress:
+                          type: string
+                        date:
+                          type: string
+                        __v:
+                          type: integer
+                        currentDriverPosition:
+                          type: object
+                          properties:
+                            latitude:
+                              type: number
+                            logitude:
+                              type: number
+                  limit:
+                    type: integer
+                  page:
+                    type: integer
+                  total:
+                    type: integer
+          404:
+            description: el conductor a ser consultado no existe
+            content:
+              "application/json":
+                schema:
+                  $ref: "#/definitions/errors/userNotFound"
+          500:
+            description: error no identificado
+            content:
+              "application/json":
+                schema:
+                  $ref: "#/definitions/errors/unexpected"
+  /travels/users/{userId}:
+    get:
+      tags:
+        - travels
+      summary: Busca travels de un user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          minimum: 1
+          description: Es el ID asociado al viaje
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: true
+          minimum: 1
+          description: Pagina de travels a ver
+      responses:
+        200:
+          description: creacion exitosa
+        404:
+          description: el conductor a ser consultado no existe
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/userNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+
+  delete:
+    tags:
+      - travels
+    summary: Elimina un conductor de un viaje
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: driverId
+        schema:
+          type: integer
+        required: true
+        minimum: 1
+        description: Es el ID asociado al conductor
+    responses:
+      204:
+        description: eliminación exitosa
+      404:
+        description: el conductor a ser consultado no existe
+        content:
+          "application/json":
+            schema:
+              $ref: "#/definitions/errors/userNotFound"
+      500:
+        description: error no identificado
+        content:
+          "application/json":
+            schema:
+              $ref: "#/definitions/errors/unexpected"
+  /travels/{travelId}/accept:
+    post:
+      tags:
+        - travels
+      summary: Acepta el viaje
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: travelId
+          schema:
+            type: string
+          required: true
+          minimum: 1
+          description: Es el ID asociado al viaje
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                driverId:
+                  type: integer
+                currentDriverPosition:
+                  type: object
+                  properties:
+                    latitude:
+                      type: number
+                    longitude:
+                      type: number
+      responses:
+        200:
+          description: devuelve toda la información del viaje asociado a un usuario
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/driver"
+        404:
+          description: el driver a ser consultado no existe
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/userNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+
+  /travels/{travelId}/reject:
+    post:
+      tags:
+        - travels
+      summary: Cancela el viaje
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: travelId
+          schema:
+            type: string
+          required: true
+          minimum: 1
+          description: Es el ID asociado al viaje
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: devuelve toda la información del viaje asociado a un usuario
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/driver"
+        404:
+          description: el driver a ser consultado no existe
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/userNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+  /travels/{travelId}/start:
+    post:
+      tags:
+        - travels
+      summary: Inicia el viaje a destino
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: travelId
+          schema:
+            type: string
+          required: true
+          minimum: 1
+          description: Es el ID asociado al viaje
+      responses:
+        200:
+          description: edición exitosa
+          content:
+            "application/json":
+              schema:
+                type: object
+        404:
+          description: el conductor a ser consultado no existe
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/userNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+  /travels/{travelId}/finish:
+    post:
+      tags:
+        - travels
+      summary: Termina sactisfactoriamente el viaje
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: travelId
+          schema:
+            type: string
+          required: true
+          minimum: 1
+          description: Es el ID asociado al viaje
+      responses:
+        200:
+          description: edición exitosa
+          content:
+            "application/json":
+              schema:
+                type: object
+        404:
+          description: el conductor a ser consultado no existe
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/userNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+  /travels/{travelId}/:
+    patch:
+      tags:
+        - travels
+      summary: Actualiza la posicion del driver dentro del viaje
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: travelId
+          schema:
+            type: string
+          required: true
+          minimum: 1
+          description: Es el ID del viaje
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currentDriverPosition:
+                  type: object
+                  properties:
+                    latitude:
+                      type: number
+                    longitude:
+                      type: number
+
+      responses:
+        200:
+          description: edición exitosa
+          content:
+            "application/json":
+              schema:
+                type: object
+        404:
+          description: el conductor a ser consultado no existe
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/userNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+
+definitions:
+  postBody:
+    type: object
+    properties:
+      name:
+        type: string
+      lastname:
+        type: string
+      phoneNumber:
+        type: integer
+      email:
+        type: string
+        format: email
+      password:
+        type: string
+  changePass:
+    type: object
+    propierties:
+      email:
+        type: string
+        format: email
+      newPassword:
+        type: string
+  user:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      lastname:
+        type: string
+      phoneNumber:
+        type: integer
+      email:
+        type: string
+        format: email
+
+  driverPostBody:
+    type: object
+    properties:
+      license:
+        type: string
+      model:
+        type: string
+      licensePlate:
+        type: string
+
+  driver:
+    type: object
+    properties:
+      id:
+        type: integer
+      userId:
+        type: integer
+      license:
+        type: string
+      model:
+        type: string
+      licensePlate:
+        type: string
+  errors:
+    userNotFound:
+      type: object
+      properties:
+        message:
+          type: string
+
+    unexpected:
+      type: object
+      properties:
+        message:
+          type: string
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []

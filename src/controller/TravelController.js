@@ -3,9 +3,9 @@ const { endpoints } = require('config');
 const { post, get, patch } = require('../utils/axios');
 const handlerResponse = require('../utils/handlerResponse');
 const logger = require('../../winston');
+const metricProducer = require('../utils/metricProducer');
 
 class TravelController {
-
   findTravels(req, res, next) {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
     return get(`${url}/travels`, req.query)
@@ -43,7 +43,7 @@ class TravelController {
     const payWithWallet = req.body.paidWithCredits;
     delete req.body.email;
     const bodyDeposit = {
-      amountInEthers: req.body.price.toString(),
+      amountInEthers: req.body.price.toString()
     };
     const payment = payWithWallet ? function pay() {
       return patch(`${urlUsers}/users/${req.body.userId}`, { balance: req.body.price, isTransaction: true, withdrawFunds: true });
@@ -58,28 +58,28 @@ class TravelController {
     };
 
     return payment()
-      .then(() => {
-        return post(`${urlTravels}/travels`, req.body)
-          .then(axiosResponse => handlerResponse(axiosResponse))
-          .catch(error => {
-            return refund()
-              .then(() => {
-                logger.error(JSON.stringify(error, undefined, 2));
-                return handlerResponse(error);
-              })
-              .catch(error => {
-                logger.error(JSON.stringify(error, undefined, 2));
-                return handlerResponse(error);
-              });
+      .then(() => post(`${urlTravels}/travels`, req.body)
+        .then(axiosResponse => handlerResponse(axiosResponse))
+        .catch(errorTravels => refund()
+          .then(() => {
+            logger.error(JSON.stringify(errorTravels, undefined, 2));
+            return handlerResponse(errorTravels);
           })
-          .then(response => {
-            res.customResponse = response;
-            next();
-          });
-      })
+          .catch(errorPayments => {
+            logger.error(JSON.stringify(errorPayments, undefined, 2));
+            return handlerResponse(errorPayments);
+          }))
+        .then(response => {
+          res.customResponse = response;
+          next();
+        }))
       .catch(error => {
         logger.error(JSON.stringify(error, undefined, 2));
-        res.customResponse = handlerResponse(error);
+        return handlerResponse(error);
+      })
+      .then(response => {
+        metricProducer(JSON.stringify({ metricName: 'travel.createTravel', metricType: 'increment' }));
+        res.customResponse = response;
         next();
       });
   }
@@ -107,32 +107,45 @@ class TravelController {
 
       const pay = req.body.paidWithCredits ? function pay() {
         const patchURL = req.body.payToDriver ? `${urlDrivers}/drivers/${req.body.driverId}` : `${urlUsers}/users/${req.body.userId}`;
-        return patch(patchURL, { balance: req.body.price, isTransaction: true, withdrawFunds: false });
+        return patch(patchURL, {
+          balance: req.body.price,
+          isTransaction: true,
+          withdrawFunds: false
+        });
       } : function pay() {
         return post(`${urlWallet}/payments/pay/${req.body.email}`, { amountInEthers: req.body.price.toString() });
       };
 
       return post(`${url}/travels/${req.params.travelId}/${state}`, req.body)
-        .then((axiosResponse) => {
-          if (state == 'reject' || state == 'finish') {
+        .then(async axiosResponse => {
+          if (state === 'reject' || state === 'finish') {
+            if (state === 'finish') {
+              await get(`${url}/travels/${req.params.travelId}`).then(data => {
+                const init = new Date(data.data.data.date);
+                const finish = new Date();
+                const diffMs = (finish - init);
+                const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
+                metricProducer(JSON.stringify({ metricName: 'travel.duration', metricType: 'histogram', metricValue: diffMins }));
+              });
+            }
             return pay()
               .then(() => handlerResponse(axiosResponse))
-              .catch((error) => {
+              .catch(error => {
                 logger.error(JSON.stringify(error, undefined, 2));
                 return handlerResponse(error);
               });
           }
-          return handlerResponse(axiosResponse)
+          return handlerResponse(axiosResponse);
         })
-        .catch((error) => {
+        .catch(error => {
           logger.error(JSON.stringify(error, undefined, 2));
           return handlerResponse(error);
         })
-        .then((response) => {
+        .then(response => {
           res.customResponse = response;
           next();
         });
-    }
+    };
   }
 
   findTravelById(req, res, next) {
@@ -140,7 +153,6 @@ class TravelController {
     return get(`${url}/travels/${req.params.travelId}`)
       .then(axiosResponse => handlerResponse(axiosResponse))
       .catch(error => {
-        console.log(error);
         logger.error(JSON.stringify(error, undefined, 2));
         return handlerResponse(error);
       })
@@ -236,6 +248,7 @@ class TravelController {
         .then(axiosResponse => handlerResponse(axiosResponse))
         .catch(error => {
           logger.error(JSON.stringify(error, undefined, 2));
+          return handlerResponse(error);
         })
         .then(response => {
           res.customResponse = response;
@@ -243,10 +256,23 @@ class TravelController {
         });
     } catch (error) {
       logger.error(JSON.stringify(error, undefined, 2));
-
       res.customResponse = handlerResponse(error);
-      next();
+      return next();
     }
+  }
+
+  test(req, res, next) {
+    const url = process.env.travel_microservice || endpoints.travelMicroservice;
+    return get(`${url}/travels/test`, { ...req.query })
+      .then(axiosResponse => handlerResponse(axiosResponse))
+      .catch(error => {
+        logger.error(JSON.stringify(error, undefined, 2));
+        return handlerResponse(error);
+      })
+      .then(response => {
+        res.customResponse = response;
+        next();
+      });
   }
 }
 
