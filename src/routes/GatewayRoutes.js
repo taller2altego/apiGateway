@@ -6,6 +6,7 @@ const user = require('../controller/UserController');
 const driver = require('../controller/DriverController');
 const identity = require('../controller/IdentityController');
 const TravelController = require('../controller/TravelController');
+const CommentController = require('../controller/CommentController');
 
 // validators
 const checkUserByEmail = require('../validator/checkUserByEmail');
@@ -76,6 +77,12 @@ module.exports = app => {
   router.patch('/drivers/:driverId', validateToken, driver.patchDriverById, handlerResponse);
   router.patch('/drivers/:driverId/payment', validateToken, driver.patchDriverOnPayment, handlerResponse);
   router.delete('/drivers/:driverId', validateToken, driver.removeDriverById, handlerResponse);
+
+  // comments
+  router.get('/comments/user/:id', validateToken, CommentController.getUserCommentsById, handlerResponse);
+  router.get('/comments/driver/:id', validateToken, CommentController.getDriverCommentsById, handlerResponse);
+  router.post('/comments/user', validateToken, CommentController.createUserComment, handlerResponse);
+  router.post('/comments/driver', validateToken, CommentController.createDriverComment, handlerResponse);
 
   // credential-microservice
   router.post('/login/oauth', decryptToken, checkUserByEmailAndPassword(OAuthMethod), identity.signIn, handlerResponse);
