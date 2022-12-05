@@ -23,4 +23,4 @@ jobs:
           node-version: "16"
 
       - run: npm ci
-      - run: npm run linter
+      - run: npm run lint
