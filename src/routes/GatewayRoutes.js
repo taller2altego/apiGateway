@@ -14,6 +14,7 @@ const validateToken = require('../validator/validateToken');
 
 // configs
 const decryptToken = require('../validator/decryptToken');
+const PaymentController = require('../controller/PaymentController');
 const metricProducer = require('../utils/metricProducer');
 
 module.exports = app => {
@@ -73,6 +74,7 @@ module.exports = app => {
   router.get('/drivers/:driverId/reports', validateToken, driver.findAllReportsByDriverId, handlerResponse);
 
   router.patch('/drivers/:driverId', validateToken, driver.patchDriverById, handlerResponse);
+  router.patch('/drivers/:driverId/payment', validateToken, driver.patchDriverOnPayment, handlerResponse);
   router.delete('/drivers/:driverId', validateToken, driver.removeDriverById, handlerResponse);
 
   // credential-microservice
@@ -105,4 +107,8 @@ module.exports = app => {
 
   // metric test
   router.get('/metric_test', testingMetrics);
+
+  // payments
+  router.post('/payments/deposit/:email', validateToken, PaymentController.deposit, handlerResponse);
+  router.post('/payments/pay/:email', validateToken, PaymentController.pay, handlerResponse);
 };

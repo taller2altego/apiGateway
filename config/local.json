@@ -4,6 +4,7 @@
     "driverMicroservice": "http://user_microservice:5000",
     "identityMicroservice": "http://login_microservice:5000",
     "travelMicroservice": "http://travel_microservice:5000",
-    "userMicroservice": "http://user_microservice:5000"
+    "userMicroservice": "http://user_microservice:5000",
+    "paymentMicroservice": "http://payments:5000"
   }
 }
