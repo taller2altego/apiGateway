@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { endpoints } = require('config');
 const {
-  post, get, patch, remove
+  post, get, patch
 } = require('../utils/axios');
 const handlerResponse = require('../utils/handlerResponse');
 const logger = require('../../winston');
@@ -88,17 +88,6 @@ class UserController {
         logger.error(JSON.stringify(error, undefined, 2));
         return handlerResponse(error);
       })
-      .then(response => {
-        res.customResponse = response;
-        next();
-      });
-  }
-
-  removeUserById(req, res, next) {
-    const url = process.env.user_microservice || endpoints.userMicroservice;
-    return remove(`${url}/users/${req.params.id}`, { ...req.query })
-      .then(axiosResponse => handlerResponse(axiosResponse))
-      .catch(error => handlerResponse(error))
       .then(response => {
         res.customResponse = response;
         next();
