@@ -1,5 +1,7 @@
 const { endpoints } = require('config');
 const handlerResponse = require('../utils/handlerResponse');
+const metricProducer = require('../utils/metricProducer');
+
 const {
   post, get, patch, remove
 } = require('../utils/axios');
@@ -77,7 +79,10 @@ class DriverController {
           return post(`${urlWallet}/payments/pay/${user.data.email}`, {
             amountInEthers: req.body.balance.toString()
           })
-            .then(() => handlerResponse(axiosResponse))
+            .then(() => {
+              metricProducer(JSON.stringify({ metricName: 'payments.chargeDone', metricType: 'increment' }));
+              return handlerResponse(axiosResponse);
+            })
             .catch(error => handlerResponse(error));
         }
         return handlerResponse(axiosResponse);

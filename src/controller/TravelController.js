@@ -58,21 +58,24 @@ class TravelController {
     };
 
     return payment()
-      .then(() => post(`${urlTravels}/travels`, req.body)
-        .then(axiosResponse => handlerResponse(axiosResponse))
-        .catch(errorTravels => refund()
-          .then(() => {
-            logger.error(JSON.stringify(errorTravels, undefined, 2));
-            return handlerResponse(errorTravels);
-          })
-          .catch(errorPayments => {
-            logger.error(JSON.stringify(errorPayments, undefined, 2));
-            return handlerResponse(errorPayments);
-          }))
-        .then(response => {
-          res.customResponse = response;
-          next();
-        }))
+      .then(() => {
+        metricProducer(JSON.stringify({ metricName: 'payments.payDone', metricType: 'increment' }));
+        return post(`${urlTravels}/travels`, req.body)
+          .then(axiosResponse => handlerResponse(axiosResponse))
+          .catch(errorTravels => refund()
+            .then(() => {
+              logger.error(JSON.stringify(errorTravels, undefined, 2));
+              return handlerResponse(errorTravels);
+            })
+            .catch(errorPayments => {
+              logger.error(JSON.stringify(errorPayments, undefined, 2));
+              return handlerResponse(errorPayments);
+            }))
+          .then(response => {
+            res.customResponse = response;
+            next();
+          });
+      })
       .catch(error => {
         logger.error(JSON.stringify(error, undefined, 2));
         return handlerResponse(error);

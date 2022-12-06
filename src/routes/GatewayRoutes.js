@@ -27,8 +27,10 @@ module.exports = app => {
     metricProducer(JSON.stringify({ metricName: 'loginUsers.oauth', metricType: 'increment' }));
     metricProducer(JSON.stringify({ metricName: 'createdUsers.oauth', metricType: 'increment' }));
     metricProducer(JSON.stringify({ metricName: 'travel.createTravel', metricType: 'increment' }));
+    metricProducer(JSON.stringify({ metricName: 'payments.payDone', metricType: 'increment' }));
+    metricProducer(JSON.stringify({ metricName: 'payments.chargeDone', metricType: 'increment' }));
     metricProducer(JSON.stringify({ metricName: 'travel.duration', metricType: 'histogram', metricValue: Math.floor(Math.random() * 60) }));
-    res.status(200).send({ message: 'Hola' });
+    res.status(200).send({ message: 'Test Metrics DONE' });
   };
 
   const handlerResponse = (req, res) => {
