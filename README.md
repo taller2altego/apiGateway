@@ -1,9 +1,21 @@
-
 # API Gateway Fiuber
+### Construido con:
+
+[![Node][Node.js]][Node-url]
+[![Express][Express.js]][Express-url]
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[Node.js]: https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white
+[Node-url]: https://nodejs.org/en/
+[Express.js]: https://img.shields.io/badge/Express.js-404D59?style=for-the-badge
+[Express-url]: https://expressjs.com/es/
+
 
 ## Dependencias
 
 Utilizamos [npm](https://www.npmjs.com/) como gestor de paquetes, y [Docker](https://www.docker.com/) para el despliegue local.
+
 
 
 ## Instalacion:
@@ -65,3 +77,7 @@ Y para ver los ultimos logs:
 ### [Payments microservice](https://github.com/taller2altego/payments)
 
 ### [Metrics microservice](https://github.com/taller2altego/alarms-microservice)
+
+
+
+
