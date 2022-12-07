@@ -76,9 +76,7 @@ class DriverController {
       .then(async axiosResponse => {
         if (req.body.withdrawFunds) {
           const user = await get(`${urlUsers}/users/${req.body.userId}`);
-          return post(`${urlWallet}/payments/pay/${user.data.email}`, {
-            amountInEthers: req.body.balance.toString()
-          })
+          return post(`${urlWallet}/payments/pay/${user.data.email}`, { amountInEthers: req.body.balance.toString() })
             .then(() => {
               metricProducer(JSON.stringify({ metricName: 'payments.chargeDone', metricType: 'increment' }));
               return handlerResponse(axiosResponse);

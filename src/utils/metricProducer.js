@@ -1,6 +1,6 @@
-module.exports = eventToLog => {
+const logger = require('../../winston');
 
-  console.log(process.env.NODE_ENV);
+module.exports = eventToLog => {
   if (process.env.NODE_ENV === 'local') {
     return;
   }
@@ -32,18 +32,17 @@ module.exports = eventToLog => {
   });
 
   producer.on('disconnected', () => {
-    console.log('se desconectó el cliente');
+    logger.info('se desconectó el cliente');
   });
 
   producer.on('event.error', err => {
-    console.log('event.error');
-    console.log(err);
+    logger.error('event.error');
+    logger.error(err);
   });
 
   producer.on('event.log', log => {
-    // logger.log(log);
-    console.log('event.log');
-    console.log(log)
+    logger.info('event.log');
+    logger.info(log);
   });
 
   producer.connect();

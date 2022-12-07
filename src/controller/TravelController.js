@@ -10,10 +10,7 @@ class TravelController {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
     return get(`${url}/travels`, req.query)
       .then(axiosResponse => handlerResponse(axiosResponse))
-      .catch(error => {
-        logger.error(JSON.stringify(error, undefined, 2));
-        return handlerResponse(error);
-      })
+      .catch(error => handlerResponse(error))
       .then(response => {
         res.customResponse = response;
         next();
@@ -24,10 +21,7 @@ class TravelController {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
     return get(`${url}/travels/users/${req.params.userId}`, req.query)
       .then(axiosResponse => handlerResponse(axiosResponse))
-      .catch(error => {
-        logger.error(JSON.stringify(error, undefined, 2));
-        return handlerResponse(error);
-      })
+      .catch(error => handlerResponse(error))
       .then(response => {
         res.customResponse = response;
         next();
@@ -63,23 +57,14 @@ class TravelController {
         return post(`${urlTravels}/travels`, req.body)
           .then(axiosResponse => handlerResponse(axiosResponse))
           .catch(errorTravels => refund()
-            .then(() => {
-              logger.error(JSON.stringify(errorTravels, undefined, 2));
-              return handlerResponse(errorTravels);
-            })
-            .catch(errorPayments => {
-              logger.error(JSON.stringify(errorPayments, undefined, 2));
-              return handlerResponse(errorPayments);
-            }))
+            .then(() => handlerResponse(errorTravels))
+            .catch(errorPayments => handlerResponse(errorPayments)))
           .then(response => {
             res.customResponse = response;
             next();
           });
       })
-      .catch(error => {
-        logger.error(JSON.stringify(error, undefined, 2));
-        return handlerResponse(error);
-      })
+      .catch(error => handlerResponse(error))
       .then(response => {
         metricProducer(JSON.stringify({ metricName: 'travel.createTravel', metricType: 'increment' }));
         res.customResponse = response;
@@ -91,10 +76,7 @@ class TravelController {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
     return patch(`${url}/travels/${req.params.travelId}`, req.body)
       .then(axiosResponse => handlerResponse(axiosResponse))
-      .catch(error => {
-        logger.error(JSON.stringify(error, undefined, 2));
-        return handlerResponse(error);
-      })
+      .catch(error => handlerResponse(error))
       .then(response => {
         res.customResponse = response;
         next();
@@ -132,18 +114,11 @@ class TravelController {
               });
             }
             return pay()
-              .then(() => handlerResponse(axiosResponse))
-              .catch(error => {
-                logger.error(JSON.stringify(error, undefined, 2));
-                return handlerResponse(error);
-              });
+              .then(() => handlerResponse(axiosResponse)).catch(error => handlerResponse(error));
           }
           return handlerResponse(axiosResponse);
         })
-        .catch(error => {
-          logger.error(JSON.stringify(error, undefined, 2));
-          return handlerResponse(error);
-        })
+        .catch(error => handlerResponse(error))
         .then(response => {
           res.customResponse = response;
           next();
@@ -155,10 +130,7 @@ class TravelController {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
     return get(`${url}/travels/${req.params.travelId}`)
       .then(axiosResponse => handlerResponse(axiosResponse))
-      .catch(error => {
-        logger.error(JSON.stringify(error, undefined, 2));
-        return handlerResponse(error);
-      })
+      .catch(error => handlerResponse(error))
       .then(response => {
         res.customResponse = response;
         next();
@@ -169,10 +141,7 @@ class TravelController {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
     return get(`${url}/travels/${req.params.travelId}/driver`)
       .then(axiosResponse => handlerResponse(axiosResponse))
-      .catch(error => {
-        logger.error(JSON.stringify(error, undefined, 2));
-        return handlerResponse(error);
-      })
+      .catch(error => handlerResponse(error))
       .then(response => {
         res.customResponse = response;
         next();
@@ -183,10 +152,7 @@ class TravelController {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
     return get(`${url}/fees`, req.query)
       .then(axiosResponse => handlerResponse(axiosResponse))
-      .catch(error => {
-        logger.error(JSON.stringify(error, undefined, 2));
-        return handlerResponse(error);
-      })
+      .catch(error => handlerResponse(error))
       .then(response => {
         res.customResponse = response;
         next();
@@ -197,10 +163,7 @@ class TravelController {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
     return get(`${url}/fees/${req.params.feeId}`, req.query)
       .then(axiosResponse => handlerResponse(axiosResponse))
-      .catch(error => {
-        logger.error(JSON.stringify(error, undefined, 2));
-        return handlerResponse(error);
-      })
+      .catch(error => handlerResponse(error))
       .then(response => {
         res.customResponse = response;
         next();
@@ -211,10 +174,7 @@ class TravelController {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
     return post(`${url}/fees`, req.body, {}, req.params)
       .then(axiosResponse => handlerResponse(axiosResponse))
-      .catch(error => {
-        logger.error(JSON.stringify(error, undefined, 2));
-        return handlerResponse(error);
-      })
+      .catch(error => handlerResponse(error))
       .then(response => {
         res.customResponse = response;
         next();
@@ -225,10 +185,7 @@ class TravelController {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
     return patch(`${url}/fees/${req.params.feeId}`, req.body, {}, { ...req.query })
       .then(axiosResponse => handlerResponse(axiosResponse))
-      .catch(error => {
-        logger.error(JSON.stringify(error, undefined, 2));
-        return handlerResponse(error);
-      })
+      .catch(error => handlerResponse(error))
       .then(response => {
         res.customResponse = response;
         next();
@@ -249,10 +206,7 @@ class TravelController {
       const url = process.env.travel_microservice || endpoints.travelMicroservice;
       return get(`${url}/price`, { ...req.query, seniority })
         .then(axiosResponse => handlerResponse(axiosResponse))
-        .catch(error => {
-          logger.error(JSON.stringify(error, undefined, 2));
-          return handlerResponse(error);
-        })
+        .catch(error => handlerResponse(error))
         .then(response => {
           res.customResponse = response;
           next();
@@ -268,10 +222,7 @@ class TravelController {
     const url = process.env.travel_microservice || endpoints.travelMicroservice;
     return get(`${url}/travels/test`, { ...req.query })
       .then(axiosResponse => handlerResponse(axiosResponse))
-      .catch(error => {
-        logger.error(JSON.stringify(error, undefined, 2));
-        return handlerResponse(error);
-      })
+      .catch(error => handlerResponse(error))
       .then(response => {
         res.customResponse = response;
         next();
