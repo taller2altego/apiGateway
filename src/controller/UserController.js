@@ -12,10 +12,7 @@ const patchUserById = (req, res, next) => {
 
   return patch(`${url}/users/${req.params.id}`, req.body, {}, { ...req.query })
     .then(axiosResponse => handlerResponse(axiosResponse))
-    .catch(error => {
-      logger.error(JSON.stringify(error, undefined, 2));
-      return handlerResponse(error);
-    })
+    .catch(error => handlerResponse(error))
     .then(response => {
       res.customResponse = response;
       next();
@@ -73,7 +70,6 @@ class UserController {
       }
       return patchUserById(req, res, next);
     } catch (error) {
-      logger.error(JSON.stringify(error, undefined, 2));
       res.customResponse = handlerResponse(error);
       return next();
     }
@@ -84,10 +80,7 @@ class UserController {
 
     return patch(`${url}/users/${req.params.id}/location`, req.body)
       .then(axiosResponse => handlerResponse(axiosResponse))
-      .catch(error => {
-        logger.error(JSON.stringify(error, undefined, 2));
-        return handlerResponse(error);
-      })
+      .catch(error => handlerResponse(error))
       .then(response => {
         res.customResponse = response;
         next();
