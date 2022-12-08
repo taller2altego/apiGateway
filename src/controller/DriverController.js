@@ -62,7 +62,7 @@ class DriverController {
       });
   }
 
-  patchDriverOnPayment(req, res, next) {
+  async patchDriverOnPayment(req, res, next) {
     const urlDrivers = process.env.driver_microservice || endpoints.driverMicroservice;
     const urlUsers = process.env.user_microservice || endpoints.userMicroservice;
     const urlWallet = process.env.paymentMicroservice || endpoints.paymentMicroservice;
@@ -72,10 +72,11 @@ class DriverController {
       withdrawFunds: req.body.withdrawFunds
     };
 
-    return patch(`${urlDrivers}/drivers/${req.params.driverId}`, body)
+    const user = await get(`${urlUsers}/users/${req.body.userId}`);
+
+    return patch(`${urlDrivers}/drivers/${user.data.driverId}`, body)
       .then(async axiosResponse => {
         if (req.body.withdrawFunds) {
-          const user = await get(`${urlUsers}/users/${req.body.userId}`);
           return post(`${urlWallet}/payments/pay/${user.data.email}`, { amountInEthers: req.body.balance.toString() })
             .then(() => {
               metricProducer(JSON.stringify({ metricName: 'payments.chargeDone', metricType: 'increment' }));
