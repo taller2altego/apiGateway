@@ -1,0 +1,183 @@
+paths:
+  /comments/user/{id}:
+    get:
+      tags:
+        - comments
+      summary: Obtiene todos los comentarios asociados al user id
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          minimum: 1
+          description: Es el ID asociado al user
+      responses:
+        200:
+          description: Una lista de objetos con el detalle de los comentarios asociados al user id
+          content:
+            "application/json":
+              schema:
+                type: array
+                items:
+                  $ref: "#/definitions/comments"
+        404:
+          description: no se encontro ningun comentario
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/commentNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+
+  /comments/driver/{id}:
+    get:
+      tags:
+        - comments
+      summary: Obtiene todos los comentarios asociados al driver id
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          minimum: 1
+          description: Es el ID asociado al driver
+
+      responses:
+        200:
+          description: Una lista de objetos con el detalle de los comentarios asociados al driver id
+          content:
+            "application/json":
+              schema:
+                type: array
+                items:
+                  $ref: "#/definitions/comments"
+        404:
+          description: no se encontro ningun comentario
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/commentNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+
+  /comments/user:
+    post:
+      tags:
+        - comments
+      summary: Agrega un comentario a un usuario
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/commentPostBody"
+      responses:
+        200:
+          description: devuelve un objeto vacio
+          content:
+            "application/json":
+        404:
+          description: el user al que se solicita agregar un comentario no existe
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/idNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+
+  /comments/driver:
+    post:
+      tags:
+        - comments
+      summary: Agrega un comentario a un driver
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/commentPostBody"
+      responses:
+        200:
+          description: devuelve un objeto vacio
+          content:
+            "application/json":
+        404:
+          description: el usuario asociado al driver al que se solicita agregar un comentario no existe
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/idNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+
+definitions:
+  commentPostBody:
+    type: object
+    properties:
+      userId:
+        type: integer
+      description:
+        type: string
+  comments:
+    type: object
+    propierties:
+      id:
+        type: integer
+      userId:
+        type: integer
+      isUserComment:
+        type: boolean
+      description:
+        type: string
+  errors:
+    commentNotFound:
+      type: object
+      properties:
+        message:
+          type: string
+    idNotFound:
+      type: object
+      properties:
+        message:
+          type: string
+    unexpected:
+      type: object
+      properties:
+        message:
+          type: string
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []

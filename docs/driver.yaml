@@ -1,4 +1,35 @@
 paths:
+  /drivers:
+    get:
+      tags:
+        - driver
+      summary: Obtiene todos los drivers registrados
+      security:
+        - bearerAuth: []
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Una lista de objetos con el detalle de los drivers
+          content:
+            "application/json":
+              schema:
+                type: array
+                items:
+                  $ref: "#/definitions/driver"
+        404:
+          description: no se encontro ningun driver
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/driverNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+
   /users/{userId}/driver:
     post:
       tags:
@@ -102,7 +133,6 @@ paths:
             "application/json":
               schema:
                 $ref: "#/definitions/errors/unexpected"
-
     patch:
       tags:
         - driver
@@ -142,7 +172,44 @@ paths:
             "application/json":
               schema:
                 $ref: "#/definitions/errors/unexpected"
-    
+
+  /drivers/{driverId}/reports:
+    get:
+      tags:
+        - driver
+      summary: Obtiene todos los reportes asociados al driverId
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: driverId
+          schema:
+            type: integer
+          required: true
+          minimum: 1
+          description: Es el ID asociado al conductor
+      responses:
+        200:
+          description: Una lista de objetos con el detalle de los reportes asociados al driverId
+          content:
+            "application/json":
+              schema:
+                type: array
+                items:
+                  $ref: "#/definitions/reports"
+        404:
+          description: no se encontro ningun reporte
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/reportNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+
 
 definitions:
   postBody:
@@ -192,6 +259,18 @@ definitions:
       licensePlate:
         type: string
 
+  reports:
+    type: object
+    properties:
+      id:
+        type: integer
+      userId:
+        type: integer
+      driverId:
+        type: integer
+      description:
+        type: string
+
   driver:
     type: object
     properties:
@@ -211,7 +290,16 @@ definitions:
       properties:
         message:
           type: string
-
+    driverNotFound:
+      type: object
+      properties:
+        message:
+          type: string
+    reportNotFound:
+      type: object
+      properties:
+        message:
+          type: string
     unexpected:
       type: object
       properties:

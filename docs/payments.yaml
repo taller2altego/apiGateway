@@ -1,0 +1,164 @@
+paths:
+  /payments/deposit/{email}:
+    post:
+      tags:
+        - payments
+      summary: Deposito de Ethereum en Smart Contract
+      security: 
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/transactionBody"
+      parameters:
+        - in: path
+          name: email
+          description: email de la wallet que realizara el deposito
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: devuelve toda la información de la transaccion realizada 
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/transaction"
+        404:
+          description: la wallet asociada al email indicado no existe
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/walletNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+
+  /payments/pay/{email}:
+    post:
+      tags:
+        - payments
+      summary: Retiro de Ethereum desde Smart Contract a Wallet
+      security: 
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/transactionBody"
+      parameters:
+        - in: path
+          name: email
+          description: email de la wallet a la cual se realizara el pago
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: devuelve toda la información de la transaccion realizada 
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/transaction"
+        404:
+          description: la wallet asociada al email indicado no existe
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/walletNotFound"
+        500:
+          description: error no identificado
+          content:
+            "application/json":
+              schema:
+                $ref: "#/definitions/errors/unexpected"
+definitions:
+  transactionBody:
+    type: object
+    properties:
+      amount:
+        type: string
+  transaction:
+    type: object
+    properties:
+      type:
+        type: integer
+      chainId:
+        type: integer
+      nonce:
+        type: integer
+      maxPriorityFeePerGas:
+        type: object
+        properties:
+          type:
+            type: string
+          hex:
+            type: string
+      maxFeePerGas:
+        type: object
+        properties:
+          type:
+            type: string
+          hex:
+            type: string
+      gasPrice:
+        type: string
+      gasLimit:
+        type: object
+        properties:
+          type:
+            type: string
+          hex:
+            type: string
+      to:
+        type: string
+      value:
+        type: object
+        properties:
+          type:
+            type: string
+          hex:
+            type: string
+      data:
+        type: string
+      accesList:
+        type: object
+      hash:
+        type: string
+      v:
+        type: integer
+      r:
+        type: string
+      s:
+        type: string
+      from:
+        type: string
+      confirmations:
+        type: integer
+  errors:
+    walletNotFound:
+      type: object
+      properties:
+        message:
+          type: string
+    unexpected:
+      type: object
+      properties:
+        message:
+          type: string
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      
+security:
+  - bearerAuth: []
